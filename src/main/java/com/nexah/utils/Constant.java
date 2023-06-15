@@ -1,31 +1,8 @@
 package com.nexah.utils;
 
 public class Constant {
-    public static final String CLIENT_SESSION_CLOSED = "closed";
-    public static final String CLIENT_SESSION_OPEN = "opened";
-    public static final String IP_NOT_ALLOWED = "IP not allowed";
-    public static final String SERVER_UNBOUND = "Server not bound";
-    public static final String INVALID_CREDENTIALS = "Invalid User or Password";
-    public static final String SESSION_LIMIT_REACHED = "Session limit reached";
-    public static final String ACCOUNT_DISABLED = "Account disabled";
-    public static final String PASSWORD_UPDATED = "Password updated successfully!";
-    public static final String INVALID_PASSWORD = "Old password incorrect!";
-    public static final String SMPP_INBOUND_NOT_ALLOWED = "SMPP inbound not allowed to user";
-    public static final String SID_NOT_REGISTRED = "SID NOT AUTHORIZED";
     public static final String SMS_ERROR = "ERROR";
-    public static final String ERROR = "ERROR";
-    public static final String SUCCESS = "success";
-    public static final String NOT_FOUND = "data not found";
-    public static final String OK = "OK";
     public static final String SMS_SENT = "SENT";
-    public static final String STATUS_FAILED = "FAILED";
-    public static final String STATUS_SMPP_FAILED = "FAILED : service $SERVICE return msgId NULL";
-    public static final String STATUS_CREATED = "CREATED";
-    public static final String STATUS_SENT = "SENT";
-    public static final String INVALID_MSISDN = "Invalid MSISDN";
-    public static final String BALANCE_NOT_ENOUGH = "BALANCE NOT ENOUGH FOR COUNTRY: $COUNTRY";
-    public static final String OPERATOR_NOT_REGISTRED = "OPERATOR NOT REGISTRED FOR PHONE NUMBER: $MSISDN";
-    public static final String BALANCE_NOT_FOUND = "BALANCE NOT FOUND FOR COUNTRY: $COUNTRY";
     public static final String SMS_MSG_SENT = "Message sent successfully";
     public static final String SERVER_NOT_BOUND = "The server is not bound to the provider";
     public static final String DELIV_TO_TERMINAL = "DeliveredToTerminal";
@@ -39,14 +16,5 @@ public class Constant {
     public static final String UNKNOWN = "UNKNOWN";
     public static final String REJECTD = "REJECTD";
     public static final String BADSTAT = "BADSTAT";
-    public static final String OCM_API = "OCM API";
-    public static final String MTNCM_API = "MTNCM API";
-    public static final String MTarget_API = "MTarget API";
-    public static final String LMT_API = "LMT API";
-    public static final String ETECH_API = "ETECH API";
-    public static final String SMPP_SMS = "smpp-sms";
-    public static final String ROLES = "roles";
-    public static final String MTNAPI_V2 = "v2";
-    public static final String MTNAPI_V3 = "v3";
 
 }

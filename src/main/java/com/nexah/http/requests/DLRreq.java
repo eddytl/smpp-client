@@ -47,7 +47,7 @@ public class DLRreq {
     }
 
     public void setSubmitDate(ZonedDateTime submitDate) {
-        this.submitDate = DateUtils.dateToString(submitDate);
+        this.submitDate = DateUtils.dateToString(Date.from(submitDate.toInstant()));
     }
 
     public String getDeliveryDate() {
@@ -55,7 +55,7 @@ public class DLRreq {
     }
 
     public void setDeliveryDate(ZonedDateTime deliveryDate) {
-        this.deliveryDate = DateUtils.dateToString(deliveryDate);
+        this.deliveryDate = DateUtils.dateToString(Date.from(deliveryDate.toInstant()));
     }
 
     public String getMsisdn() {

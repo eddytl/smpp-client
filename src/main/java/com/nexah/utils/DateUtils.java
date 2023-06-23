@@ -19,9 +19,4 @@ public class DateUtils {
         return date != null ? dateFormat.format(date): null;
     }
 
-    public static String dateToString(ZonedDateTime date){
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-        return date != null ? dateFormat.format(date): null;
-    }
 }

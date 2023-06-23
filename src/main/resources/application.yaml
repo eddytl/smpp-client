@@ -1,3 +1,5 @@
+api:
+  key: 83e825b1-2bfc-4e2b-a745-66a26c2391bf
 jwt:
   secret: dc7eb75c-9c87-11ed-a8fc-0242ac120002
 logging:

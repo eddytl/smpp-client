@@ -7,7 +7,11 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="2R6oo3WZiiFz5sa1OYsqhoYky7e" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -19,6 +23,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.nexah.http.requests" />
       <recent name="com.nexah.smpp" />
       <recent name="com.nexah" />
     </key>
@@ -46,9 +51,9 @@
       <screen x="45" y="27" width="1321" height="741" />
     </state>
     <state x="438" y="145" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/45.27.1321.741@45.27.1321.741" timestamp="1686846328913" />
-    <state x="361" y="224" key="com.intellij.ide.util.TipDialog" timestamp="1686582534037">
+    <state x="361" y="224" key="com.intellij.ide.util.TipDialog" timestamp="1687357337521">
       <screen x="45" y="27" width="1321" height="741" />
     </state>
-    <state x="361" y="224" key="com.intellij.ide.util.TipDialog/45.27.1321.741@45.27.1321.741" timestamp="1686582534037" />
+    <state x="361" y="224" key="com.intellij.ide.util.TipDialog/45.27.1321.741@45.27.1321.741" timestamp="1687357337521" />
   </component>
 </project>

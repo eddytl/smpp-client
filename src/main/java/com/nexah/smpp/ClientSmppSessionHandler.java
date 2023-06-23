@@ -8,6 +8,7 @@ import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
 import com.cloudhopper.smpp.pdu.DeliverSm;
 import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.pdu.PduResponse;
+import com.nexah.http.rest.PostSMS;
 import com.nexah.services.SmppSMSService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,13 +54,14 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
         PduResponse response = null;
         try {
             if (request instanceof DeliverSm) {
-                //String sourceAddress = ((DeliverSm) request).getSourceAddress().getAddress();
+//                String sourceAddress = ((DeliverSm) request).getSourceAddress().getAddress();
+                String msisdn = ((DeliverSm) request).getDestAddress().getAddress();
                 String message = CharsetUtil.decode(((DeliverSm) request).getShortMessage(),
                         mapDataCodingToCharset(((DeliverSm) request).getDataCoding()));
                 byte dataCoding = ((DeliverSm) request).getDataCoding();
                 DeliveryReceipt dlr = DeliveryReceipt.parseShortMessage(message, ZoneOffset.UTC);
                 log.info("DLR {}", dlr);
-//                PostSMS.sendDLR(dlr);
+                PostSMS.sendDLR(msisdn, dlr);
             }
             response = request.createResponse();
         } catch (Throwable error) {

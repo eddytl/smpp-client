@@ -35,8 +35,6 @@ public class Application {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
         ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
         List<Service> services = (ArrayList<Service>) ctx.getBean("services");
-
-//        startSession();
     }
 
     @Bean(name = "services")

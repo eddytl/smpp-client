@@ -8,6 +8,7 @@ import com.nexah.http.rest.PostSMS;
 import com.nexah.services.SmppSMSService;
 import com.nexah.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,12 +21,14 @@ public class SMSController {
     ArrayList<SmppSession> sessions;
     @Autowired
     SmppSMSService smppSMSService;
+    @Value("${api.key}")
+    String localApiKey;
 
     @GetMapping(value = "/sendsms")
     public @ResponseBody
     SMSResponse sendsms(@RequestParam(name = "apiKey") String apiKey, @RequestParam(name = "traffic") String traffic, @RequestParam(name = "mobileno") String mobileno, @RequestParam(name = "sender") String sender,
                         @RequestParam(name = "message") String message) throws SmppInvalidArgumentException {
-        if (apiKey.equals("${api.key}")){
+        if (apiKey.equals(localApiKey)){
             return PostSMS.sendsms(smppSMSService, sessions, traffic, sender, mobileno, message);
         }else{
             return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
@@ -36,7 +39,7 @@ public class SMSController {
     public @ResponseBody
     SMSResponse sendsms(@RequestBody SMSRequest smsRequest) throws SmppInvalidArgumentException {
         String apiKey = smsRequest.getApiKey();
-        if (apiKey.equals("${api.key}")){
+        if (apiKey.equals(localApiKey)){
             String sender = smsRequest.getSender();
             String message = smsRequest.getMessage();
             String mobileno = smsRequest.getMobileno();

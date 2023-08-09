@@ -25,9 +25,13 @@ public class SmppSMSService {
         if (session.isBound()) {
             String messageId = null;
             try {
+
                 //boolean requestDlr = true;
                 SubmitSm submit = new SubmitSm();
-                submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);
+                submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet
+                //submit.setDataCoding(SmppConstants.DATA_CODING_DEFAULT);  //Encoded text in GSM 7-bit;
+                //submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet
+
                 submit.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
 
                 if (textBytes != null && textBytes.length > 255) {
@@ -36,10 +40,17 @@ public class SmppSMSService {
                 } else {
                     submit.setShortMessage(textBytes);
                 }
-                submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x01, sourceAddress));
+
+                //source address Numeric TON=01 NPI=01
+                //source address "Alphanumeric" TON=05 NPI=00
+                //"Short code" TON=06 NPI=00
+
+//                submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x01, sourceAddress));
+                submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));
                 submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, destinationAddress));
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, 100000);
+
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
                     messageId = submitResponse.getMessageId();
                     log.info("SMS submitted, message id {}", submitResponse.getMessageId());

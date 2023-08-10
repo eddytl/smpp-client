@@ -52,7 +52,8 @@ public class PostSMS {
         dlRreq.setService("OCM");
         dlRreq.setSubmitDate(deliveryReceipt.getSubmitDate());
         dlRreq.setDeliveryDate(deliveryReceipt.getDoneDate());
-        DLRresp dlRresp = restTemplate.postForObject("", dlRreq, DLRresp.class);
-        log.info("DLR send response {}", dlRresp);
+        //DLRresp dlRresp = restTemplate.postForObject("", dlRreq, DLRresp.class);
+        //log.info("DLR send response {}", dlRresp);
+        log.info("DLR send dlRreq {}", dlRreq);
     }
 }

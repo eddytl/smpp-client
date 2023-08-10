@@ -10,8 +10,5 @@ com/nexah/smpp/Service.class
 com/nexah/utils/DateUtils.class
 com/nexah/smpp/DeliveryReceipt.class
 com/nexah/http/responses/SMSResponse.class
-com/Application$2.class
 com/nexah/http/requests/SMSRequest.class
 com/nexah/smpp/Async.class
-com/Application$1.class
-com/Application$ClientSmppSessionHandler.class

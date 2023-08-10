@@ -26,27 +26,29 @@ public class SmppSMSService {
             String messageId = null;
             try {
 
-                //boolean requestDlr = true;
                 SubmitSm submit = new SubmitSm();
-                submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet
-                //submit.setDataCoding(SmppConstants.DATA_CODING_DEFAULT);  //Encoded text in GSM 7-bit;
-                //submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet
+                submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
+                //submit.setDataCoding(SmppConstants.DATA_CODING_DEFAULT);  //Encoded text in GSM 7-bit - Accents et caractères spéciaux non pris en charge;
+//                submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet - Tous les textes apparaissent en chinois
 
                 submit.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
 
-                if (textBytes != null && textBytes.length > 255) {
+                if (textBytes != null && textBytes.length > 254) {
                     submit.addOptionalParameter(
                             new Tlv(SmppConstants.TAG_MESSAGE_PAYLOAD, textBytes, "message_payload"));
                 } else {
                     submit.setShortMessage(textBytes);
                 }
 
-                //source address Numeric TON=01 NPI=01
-                //source address "Alphanumeric" TON=05 NPI=00
-                //"Short code" TON=06 NPI=00
-
-//                submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x01, sourceAddress));
-                submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));
+               if(sourceAddress.matches("\\d+")){
+                   if (sourceAddress.length() < 8){
+                       submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, sourceAddress));  //"Short code" TON=06 NPI=00
+                   }else{
+                       submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, sourceAddress)); //source address Numeric TON=01 NPI=01
+                   }
+               }else{
+                   submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));  //source address "Alphanumeric" TON=05 NPI=00
+               }
                 submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, destinationAddress));
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, 100000);

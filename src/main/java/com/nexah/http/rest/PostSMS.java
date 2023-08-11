@@ -46,14 +46,16 @@ public class PostSMS {
 
     public static void sendDLR(String msisdn, DeliveryReceipt deliveryReceipt) {
         DLRreq dlRreq = new DLRreq();
-        dlRreq.setMsgId(deliveryReceipt.getMessageId());
-        dlRreq.setStatus(DeliveryReceipt.toStateText(deliveryReceipt.getState()));
-        dlRreq.setMsisdn(msisdn);
-        dlRreq.setService("OCM");
+        dlRreq.setRequestId(deliveryReceipt.getMessageId());
+        dlRreq.setDeliveryStatus(DeliveryReceipt.toStateText(deliveryReceipt.getState()));
+        dlRreq.setMobileno(msisdn);
+        dlRreq.setProvider("OCM");
+        dlRreq.setIsSmpp(1);
         dlRreq.setSubmitDate(deliveryReceipt.getSubmitDate());
-        dlRreq.setDeliveryDate(deliveryReceipt.getDoneDate());
-        //DLRresp dlRresp = restTemplate.postForObject("", dlRreq, DLRresp.class);
-        //log.info("DLR send response {}", dlRresp);
+        dlRreq.setDeliverytime(deliveryReceipt.getDoneDate());
         log.info("DLR send dlRreq {}", dlRreq);
+
+        DLRresp dlRresp = restTemplate.postForObject("https://sms-broker.nexah.net/api/v1/nxh/dr", dlRreq, DLRresp.class);
+        log.info("DLR send response {}", dlRresp);
     }
 }

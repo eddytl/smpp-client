@@ -54,8 +54,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
         PduResponse response = null;
         try {
             if (request instanceof DeliverSm) {
-//                String sourceAddress = ((DeliverSm) request).getSourceAddress().getAddress();
-                String msisdn = ((DeliverSm) request).getDestAddress().getAddress();
+                String msisdn = ((DeliverSm) request).getSourceAddress().getAddress();
+//                String msisdn = ((DeliverSm) request).getDestAddress().getAddress();
                 String message = CharsetUtil.decode(((DeliverSm) request).getShortMessage(),
                         mapDataCodingToCharset(((DeliverSm) request).getDataCoding()));
 //                byte dataCoding = ((DeliverSm) request).getDataCoding();

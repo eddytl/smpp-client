@@ -7,39 +7,60 @@ import java.util.Date;
 
 public class DLRreq {
 
-    private String msgId;
-    private String status;
-    private String msisdn;
-    private String service;
+    private String requestId;
+    private String deliveryStatus;
+    private String mobileno;
+    private String provider;
     private String submitDate;
-    private String deliveryDate;
+    private String deliverytime;
+    private Integer isSmpp;
 
     public DLRreq() {
     }
 
-    public DLRreq(String msgId, String status, String msisdn, String service, Date submitDate, Date deliveryDate) {
-        this.msgId = msgId;
-        this.status = status;
-        this.msisdn = msisdn;
-        this.service = service;
-        this.submitDate = DateUtils.dateToString(submitDate);
-        this.deliveryDate = DateUtils.dateToString(deliveryDate);
+
+    public String getRequestId() {
+        return requestId;
     }
 
-    public String getMsgId() {
-        return msgId;
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
-    public void setMsgId(String msgId) {
-        this.msgId = msgId;
+    public String getDeliveryStatus() {
+        return deliveryStatus;
     }
 
-    public String getStatus() {
-        return status;
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getMobileno() {
+        return mobileno;
+    }
+
+    public void setMobileno(String mobileno) {
+        this.mobileno = mobileno;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setSubmitDate(String submitDate) {
+        this.submitDate = submitDate;
+    }
+
+    public String getDeliverytime() {
+        return deliverytime;
+    }
+
+    public void setDeliverytime(ZonedDateTime deliveryDate) {
+        this.deliverytime = DateUtils.dateToString(Date.from(deliveryDate.toInstant()));
     }
 
     public String getSubmitDate() {
@@ -50,38 +71,24 @@ public class DLRreq {
         this.submitDate = DateUtils.dateToString(Date.from(submitDate.toInstant()));
     }
 
-    public String getDeliveryDate() {
-        return deliveryDate;
+    public Integer getIsSmpp() {
+        return isSmpp;
     }
 
-    public void setDeliveryDate(ZonedDateTime deliveryDate) {
-        this.deliveryDate = DateUtils.dateToString(Date.from(deliveryDate.toInstant()));
-    }
-
-    public String getMsisdn() {
-        return msisdn;
-    }
-
-    public void setMsisdn(String msisdn) {
-        this.msisdn = msisdn;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
+    public void setIsSmpp(Integer isSmpp) {
+        this.isSmpp = isSmpp;
     }
 
     @Override
     public String toString() {
-        return "StatusResponse{" +
-                "msgId='" + msgId + '\'' +
-                ", status='" + status + '\'' +
-                ", submitDate=" + submitDate +
-                ", deliveryDate=" + deliveryDate +
-                ", msisdn=" + msisdn +
+        return "DLRreq{" +
+                "requestId='" + requestId + '\'' +
+                ", deliveryStatus='" + deliveryStatus + '\'' +
+                ", mobileno='" + mobileno + '\'' +
+                ", provider='" + provider + '\'' +
+                ", submitDate='" + submitDate + '\'' +
+                ", deliverytime='" + deliverytime + '\'' +
+                ", isSmpp='" + isSmpp + '\'' +
                 '}';
     }
 }

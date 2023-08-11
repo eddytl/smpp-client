@@ -1,19 +1,23 @@
 package com.nexah.services;
 
+import com.cloudhopper.commons.charset.GSMCharset;
 import com.cloudhopper.smpp.*;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
 import com.cloudhopper.smpp.tlv.Tlv;
 import com.cloudhopper.smpp.type.*;
+import com.cloudhopper.smpp.util.SmppUtil;
 import com.nexah.smpp.Async;
 import com.nexah.smpp.ClientSmppSessionHandler;
+import com.nexah.smpp.GsmUtil;
 import com.nexah.smpp.Service;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 @org.springframework.stereotype.Service
@@ -25,6 +29,47 @@ public class SmppSMSService {
         if (session.isBound()) {
             String messageId = null;
             try {
+
+                // create a reference number for the message (any value from 0 to 255)
+                /*byte referenceNumber = 0x01;
+
+                byte[][] shortMessages = GsmUtil.createConcatenatedBinaryShortMessages(textBytes, referenceNumber);
+                for(byte[] shortMessage:shortMessages){
+                    //Send concatenated SMS
+                    SubmitSm submit = new SubmitSm();
+                    submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
+
+                    // set the esmClass to enable UDHI
+                    submit.setEsmClass((byte) 0x40);
+                    submit.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
+
+                    if (sourceAddress.matches("\\d+")) {
+                        if (sourceAddress.length() < 8) {
+                            submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, sourceAddress));  //"Short code" TON=06 NPI=00
+                        } else {
+                            submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, sourceAddress)); //source address Numeric TON=01 NPI=01
+                        }
+                    } else {
+                        submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));  //source address "Alphanumeric" TON=05 NPI=00
+                    }
+                    submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, destinationAddress));
+                    submit.setShortMessage(shortMessage);
+                    DefaultChannelFuture.setUseDeadLockChecker(false);
+                    SubmitSmResp submitResponse = session.submit(submit, 100000);
+
+                    if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
+                        messageId = submitResponse.getMessageId();
+                        log.info("SMS submitted, message id {}", submitResponse.getMessageId());
+                        return messageId;
+                    } else {
+                        log.info(submitResponse.getResultMessage());
+                        throw new IllegalStateException(submitResponse.getResultMessage());
+                    }
+                }*/
+
+
+                // end send concatenated sms
+
 
                 SubmitSm submit = new SubmitSm();
                 submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
@@ -40,15 +85,15 @@ public class SmppSMSService {
                     submit.setShortMessage(textBytes);
                 }
 
-               if(sourceAddress.matches("\\d+")){
-                   if (sourceAddress.length() < 8){
-                       submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, sourceAddress));  //"Short code" TON=06 NPI=00
-                   }else{
-                       submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, sourceAddress)); //source address Numeric TON=01 NPI=01
-                   }
-               }else{
-                   submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));  //source address "Alphanumeric" TON=05 NPI=00
-               }
+                if (sourceAddress.matches("\\d+")) {
+                    if (sourceAddress.length() < 8) {
+                        submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, sourceAddress));  //"Short code" TON=06 NPI=00
+                    } else {
+                        submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, sourceAddress)); //source address Numeric TON=01 NPI=01
+                    }
+                } else {
+                    submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));  //source address "Alphanumeric" TON=05 NPI=00
+                }
                 submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, destinationAddress));
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, 100000);
@@ -94,7 +139,7 @@ public class SmppSMSService {
 
 
     public void unbindServiceOnDB(ArrayList<SmppSession> sessions, SmppSessionConfiguration smppSessionConfiguration
-                                ) {
+    ) {
         try {
             sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(smppSessionConfiguration.getName()));
             log.info(smppSessionConfiguration.getName() + " Provider unbind on Database ready for reconnecting");
@@ -108,7 +153,7 @@ public class SmppSMSService {
             sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
             SmppSession session = bindSession(sessions, service);
             if (session != null) {
-             log.info("session bound");
+                log.info("session bound");
             }
         } catch (Exception e) {
             log.error(e.getMessage());

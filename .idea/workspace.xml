@@ -19,7 +19,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/com/nexah/smpp" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -28,6 +28,7 @@
       <recent name="com.nexah" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/com/nexah/smpp" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/main/java/com/nexah" />
       <recent name="$PROJECT_DIR$/src/main/resources" />
@@ -48,13 +49,17 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="513" y="83" width="548" height="626" key="#com.intellij.ide.util.MemberChooser" timestamp="1691755668844">
+      <screen x="45" y="27" width="1321" height="741" />
+    </state>
+    <state x="513" y="83" width="548" height="626" key="#com.intellij.ide.util.MemberChooser/45.27.1321.741@45.27.1321.741" timestamp="1691755668844" />
     <state x="438" y="145" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1686846328913">
       <screen x="45" y="27" width="1321" height="741" />
     </state>
     <state x="438" y="145" width="524" height="502" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/45.27.1321.741@45.27.1321.741" timestamp="1686846328913" />
-    <state x="361" y="224" key="com.intellij.ide.util.TipDialog" timestamp="1691601047817">
+    <state x="289" y="134" key="com.intellij.ide.util.TipDialog" timestamp="1691753189495">
       <screen x="45" y="27" width="1321" height="741" />
     </state>
-    <state x="361" y="224" key="com.intellij.ide.util.TipDialog/45.27.1321.741@45.27.1321.741" timestamp="1691601047817" />
+    <state x="289" y="134" key="com.intellij.ide.util.TipDialog/45.27.1321.741@45.27.1321.741" timestamp="1691753189495" />
   </component>
 </project>

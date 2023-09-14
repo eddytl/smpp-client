@@ -27,10 +27,10 @@ public class SMSController {
     @GetMapping(value = "/sendsms")
     public @ResponseBody
     SMSResponse sendsms(@RequestParam(name = "apiKey") String apiKey, @RequestParam(name = "traffic") String traffic, @RequestParam(name = "mobileno") String mobileno, @RequestParam(name = "sender") String sender,
-                        @RequestParam(name = "message") String message) throws SmppInvalidArgumentException {
-        if (apiKey.equals(localApiKey)){
-            return PostSMS.sendsms(smppSMSService, sessions, traffic, sender, mobileno, message);
-        }else{
+                        @RequestParam(name = "message") String message, @RequestParam(name = "dataEncoding") int dataEncoding, @RequestParam(name = "charset") int charset) throws SmppInvalidArgumentException {
+        if (apiKey.equals(localApiKey)) {
+            return PostSMS.sendsms(smppSMSService, sessions, traffic, sender, mobileno, message, (byte) dataEncoding, charset);
+        } else {
             return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
         }
     }
@@ -39,13 +39,15 @@ public class SMSController {
     public @ResponseBody
     SMSResponse sendsms(@RequestBody SMSRequest smsRequest) throws SmppInvalidArgumentException {
         String apiKey = smsRequest.getApiKey();
-        if (apiKey.equals(localApiKey)){
+        if (apiKey.equals(localApiKey)) {
             String sender = smsRequest.getSender();
             String message = smsRequest.getMessage();
             String mobileno = smsRequest.getMobileno();
             String traffic = smsRequest.getTraffic();
-            return PostSMS.sendsms(smppSMSService, sessions, traffic, sender, mobileno, message);
-        }else{
+            int dataCoding = smsRequest.getDataEncoding();
+            int charset = smsRequest.getCharset();
+            return PostSMS.sendsms(smppSMSService, sessions, traffic, sender, mobileno, message, (byte) dataCoding, charset);
+        } else {
             return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
         }
 

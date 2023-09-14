@@ -1,6 +1,7 @@
 package com.nexah.http.rest;
 
 import com.cloudhopper.commons.charset.CharsetUtil;
+import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSession;
 import com.cloudhopper.smpp.type.SmppInvalidArgumentException;
 import com.nexah.http.requests.DLRreq;
@@ -13,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class PostSMS {
@@ -21,14 +24,35 @@ public class PostSMS {
     private static final Logger log = LoggerFactory.getLogger(PostSMS.class);
     protected static RestTemplate restTemplate = new RestTemplate();
 
-    public static SMSResponse sendsms(SmppSMSService smppSMSService, ArrayList<SmppSession> sessions, String traffic, String sender, String mobileno, String message) throws SmppInvalidArgumentException {
+    public static SMSResponse sendsms(SmppSMSService smppSMSService, ArrayList<SmppSession> sessions, String traffic, String sender, String mobileno, String message, byte dataEncoding, int charset) throws SmppInvalidArgumentException {
         try {
             String msgId = null;
+            log.info("The message sent by the user is : " + message);
             if (!sessions.isEmpty()) {
                 for (SmppSession session : sessions) {
                     if (session.getConfiguration().getName().equals(traffic)) {
-                        byte[] textBytes = CharsetUtil.encode(message, CharsetUtil.CHARSET_ISO_8859_1);
-                        msgId = smppSMSService.sendTextMessage(session, sender, textBytes, mobileno);
+                        byte[] textBytes;
+                        switch (charset) {
+                            case 2:
+                                textBytes = CharsetUtil.encode(message, CharsetUtil.CHARSET_ISO_8859_1);
+                                break;
+                            case 3:
+                                textBytes = CharsetUtil.encode(message, CharsetUtil.CHARSET_UCS_2);
+                                break;
+                            case 4:
+                                textBytes = message.getBytes(StandardCharsets.UTF_16);
+                                break;
+                            case 5:
+                                textBytes = message.getBytes(StandardCharsets.UTF_16BE);
+                                break;
+                            default:
+                                textBytes = CharsetUtil.encode(message, CharsetUtil.CHARSET_GSM);
+                                break;
+                        }
+                        // CHARSET_GSM when data coding is set to zero else CHARSET_ISO_8859_1
+                        //byte[] textBytes = CharsetUtil.encode(message, CharsetUtil.CHARSET_GSM);
+                        log.info(Arrays.toString(textBytes));
+                        msgId = smppSMSService.sendTextMessage(session, sender, textBytes, mobileno, dataEncoding);
                         log.info("MessageID = " + msgId);
                     }
                 }

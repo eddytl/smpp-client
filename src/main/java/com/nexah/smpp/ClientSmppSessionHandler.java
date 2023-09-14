@@ -51,7 +51,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     @Override
     @SuppressWarnings("rawtypes")
     public PduResponse firePduRequestReceived(PduRequest request) {
-        PduResponse response = null;
+        PduResponse response;
         try {
             if (request instanceof DeliverSm) {
                 String msisdn = ((DeliverSm) request).getSourceAddress().getAddress();

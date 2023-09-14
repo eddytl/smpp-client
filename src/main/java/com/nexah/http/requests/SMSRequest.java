@@ -6,13 +6,32 @@ public class SMSRequest {
    private String mobileno;
    private String sender;
    private String message;
+   private int dataEncoding;
+   private int charset;
 
-    public SMSRequest(String apiKey, String mobileno, String sender, String message, String traffic) {
+
+    public SMSRequest(String apiKey, String mobileno, String sender, String message, String traffic, int dataEncoding, int charset) {
         this.apiKey = apiKey;
         this.mobileno = mobileno;
         this.sender = sender;
         this.message = message;
         this.traffic = traffic;
+        this.dataEncoding = dataEncoding;
+        this.charset = charset;
+    }
+    public int getCharset() {
+        return charset;
+    }
+
+    public void setCharset(int charset) {
+        this.charset = charset;
+    }
+    public int getDataEncoding() {
+        return dataEncoding;
+    }
+
+    public void setDataEncoding(int dataEncoding) {
+        this.dataEncoding = dataEncoding;
     }
 
     public String getApiKey() {
@@ -63,6 +82,7 @@ public class SMSRequest {
                 ", sender='" + sender + '\'' +
                 ", message='" + message + '\'' +
                 ", traffic='" + traffic + '\'' +
+                ", dataEncoding='" + dataEncoding + '\'' +
                 '}';
     }
 }

@@ -55,10 +55,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
         try {
             if (request instanceof DeliverSm) {
                 String msisdn = ((DeliverSm) request).getSourceAddress().getAddress();
-//                String msisdn = ((DeliverSm) request).getDestAddress().getAddress();
                 String message = CharsetUtil.decode(((DeliverSm) request).getShortMessage(),
                         mapDataCodingToCharset(((DeliverSm) request).getDataCoding()));
-//                byte dataCoding = ((DeliverSm) request).getDataCoding();
                 DeliveryReceipt dlr = DeliveryReceipt.parseShortMessage(message, ZoneOffset.UTC);
                 log.info("DLR {}", dlr);
                 PostSMS.sendDLR(msisdn, dlr);

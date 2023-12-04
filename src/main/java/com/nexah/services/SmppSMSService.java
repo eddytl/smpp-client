@@ -1,23 +1,19 @@
 package com.nexah.services;
 
-import com.cloudhopper.commons.charset.GSMCharset;
 import com.cloudhopper.smpp.*;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
 import com.cloudhopper.smpp.tlv.Tlv;
 import com.cloudhopper.smpp.type.*;
-import com.cloudhopper.smpp.util.SmppUtil;
 import com.nexah.smpp.Async;
 import com.nexah.smpp.ClientSmppSessionHandler;
-import com.nexah.smpp.GsmUtil;
 import com.nexah.smpp.Service;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 @org.springframework.stereotype.Service
@@ -27,54 +23,12 @@ public class SmppSMSService {
 
     public String sendTextMessage(SmppSession session, String sourceAddress, byte[] textBytes, String destinationAddress) {
         if (session.isBound()) {
-            String messageId = null;
             try {
-
-                // create a reference number for the message (any value from 0 to 255)
-                /*byte referenceNumber = 0x01;
-
-                byte[][] shortMessages = GsmUtil.createConcatenatedBinaryShortMessages(textBytes, referenceNumber);
-                for(byte[] shortMessage:shortMessages){
-                    //Send concatenated SMS
-                    SubmitSm submit = new SubmitSm();
-                    submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
-
-                    // set the esmClass to enable UDHI
-                    submit.setEsmClass((byte) 0x40);
-                    submit.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
-
-                    if (sourceAddress.matches("\\d+")) {
-                        if (sourceAddress.length() < 8) {
-                            submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, sourceAddress));  //"Short code" TON=06 NPI=00
-                        } else {
-                            submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, sourceAddress)); //source address Numeric TON=01 NPI=01
-                        }
-                    } else {
-                        submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));  //source address "Alphanumeric" TON=05 NPI=00
-                    }
-                    submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, destinationAddress));
-                    submit.setShortMessage(shortMessage);
-                    DefaultChannelFuture.setUseDeadLockChecker(false);
-                    SubmitSmResp submitResponse = session.submit(submit, 100000);
-
-                    if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
-                        messageId = submitResponse.getMessageId();
-                        log.info("SMS submitted, message id {}", submitResponse.getMessageId());
-                        return messageId;
-                    } else {
-                        log.info(submitResponse.getResultMessage());
-                        throw new IllegalStateException(submitResponse.getResultMessage());
-                    }
-                }*/
-
-
-                // end send concatenated sms
-
 
                 SubmitSm submit = new SubmitSm();
                 submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
-                //submit.setDataCoding(SmppConstants.DATA_CODING_DEFAULT);  //Encoded text in GSM 7-bit - Accents et caractères spéciaux non pris en charge;
-//                submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet - Tous les textes apparaissent en chinois
+//                submit.setDataCoding(SmppConstants.DATA_CODING_DEFAULT);  //Encoded text in GSM 7-bit - Accents et caractères spéciaux non pris en charge;
+//                submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet
 
                 submit.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
 
@@ -99,16 +53,13 @@ public class SmppSMSService {
                 SubmitSmResp submitResponse = session.submit(submit, 100000);
 
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
-                    messageId = submitResponse.getMessageId();
-                    log.info("SMS submitted, message id {}", submitResponse.getMessageId());
-                    return messageId;
+                    return submitResponse.getMessageId();
                 } else {
-                    log.info(submitResponse.getResultMessage());
                     throw new IllegalStateException(submitResponse.getResultMessage());
                 }
             } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException | SmppChannelException
-                    | InterruptedException e) {
-                log.info(e.getMessage());
+                     | InterruptedException e) {
+                log.error(e.getMessage());
                 throw new IllegalStateException(e);
             }
         }
@@ -175,7 +126,7 @@ public class SmppSMSService {
         sessionConfig.setSystemId(service.getUsername());
         sessionConfig.setPassword(service.getPassword());
         sessionConfig.setSystemType(null);
-        sessionConfig.setWindowSize(500);
+        sessionConfig.setWindowSize(20);
         sessionConfig.getLoggingOptions().setLogBytes(false);
         sessionConfig.getLoggingOptions().setLogPdu(true);
         return sessionConfig;

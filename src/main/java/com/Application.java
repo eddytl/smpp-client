@@ -33,8 +33,6 @@ public class Application {
 
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
-//        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
-//        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
     }
 
     @Bean(name = "services")
@@ -48,15 +46,6 @@ public class Application {
         service01.setPassword("A2P75int");
         service01.setBound(false);
         services.add(service01);
-
-        Service service02 = new Service();
-        service02.setName("Commercial");
-        service02.setHost("80.12.36.131");
-        service02.setPort(2775);
-        service02.setUsername("A2Pnexah2");
-        service02.setPassword("A2P75int");
-        service02.setBound(false);
-        services.add(service02);
 
         return services;
     }

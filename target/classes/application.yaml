@@ -1,0 +1,40 @@
+api:
+  key: 83e825b1-2bfc-4e2b-a745-66a26c2391bf
+jwt:
+  secret: dc7eb75c-9c87-11ed-a8fc-0242ac120002
+logging:
+  file: /var/www/html/smpp/storage/logs/smpp.log
+sms:
+  async:
+    initial-delay: 30000
+    rebind-delay: 20000
+server:
+  port: 8081
+  servlet:
+    contextPath: /api
+  #ssl:
+  #  enabled: false
+spring:
+  profiles:
+    active: dev
+  datasource:
+#    url: jdbc:mysql://db-smpp.c5ixpiqftj37.us-east-2.rds.amazonaws.com:3306/smpp_sms_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false&autoReconnect=true
+#    username: phpmyadmin
+#    password: b9w7wIpHQcojqLhDxrE=
+#    url: jdbc:mysql://localhost:3306/smpp_sms_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false&autoReconnect=true
+#    username: nexah
+#    password: nexah
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    hibernate:
+#      properties:
+#        auto_quote_keyword: true
+#        format_sql: true
+#      ddl-auto: update
+#      jdbc:
+#        time_zone: UTC
+#    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+#    open-in-view: false
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false

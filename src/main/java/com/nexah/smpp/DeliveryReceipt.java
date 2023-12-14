@@ -414,42 +414,42 @@ public class DeliveryReceipt {
 			curFieldEntry = nextFieldEntry;
 		}
 
-		if (checkMissingFields) {
-			if (StringUtil.isEmpty(dlr.messageId)) {
-				throw new DeliveryReceiptException(
-						"Unable to find [id] field or empty value in delivery receipt message");
-			}
-
-			if (dlr.submitCount < 0) {
-				throw new DeliveryReceiptException(
-						"Unable to find [sub] field or empty value in delivery receipt message");
-			}
-
-			if (dlr.deliveredCount < 0) {
-				throw new DeliveryReceiptException(
-						"Unable to find [dlvrd] field or empty value in delivery receipt message");
-			}
-
-			if (dlr.submitDate == null) {
-				throw new DeliveryReceiptException(
-						"Unable to find [submit date] field or empty value in delivery receipt message");
-			}
-
-			if (dlr.doneDate == null) {
-				throw new DeliveryReceiptException(
-						"Unable to find [done date] field or empty value in delivery receipt message");
-			}
-
-			if (dlr.state < 0) {
-				throw new DeliveryReceiptException(
-						"Unable to find [stat] field or empty value in delivery receipt message");
-			}
-
-			if (StringUtil.isEmpty(dlr.rawErrorCode) && dlr.errorCode < 0) {
-				throw new DeliveryReceiptException(
-						"Unable to find [err] field or empty value in delivery receipt message");
-			}
-		}
+//		if (checkMissingFields) {
+//			if (StringUtil.isEmpty(dlr.messageId)) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [id] field or empty value in delivery receipt message");
+//			}
+//
+//			if (dlr.submitCount < 0) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [sub] field or empty value in delivery receipt message");
+//			}
+//
+//			if (dlr.deliveredCount < 0) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [dlvrd] field or empty value in delivery receipt message");
+//			}
+//
+//			if (dlr.submitDate == null) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [submit date] field or empty value in delivery receipt message");
+//			}
+//
+//			if (dlr.doneDate == null) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [done date] field or empty value in delivery receipt message");
+//			}
+//
+//			if (dlr.state < 0) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [stat] field or empty value in delivery receipt message");
+//			}
+//
+//			if (StringUtil.isEmpty(dlr.rawErrorCode) && dlr.errorCode < 0) {
+//				throw new DeliveryReceiptException(
+//						"Unable to find [err] field or empty value in delivery receipt message");
+//			}
+//		}
 
 		return dlr;
 	}

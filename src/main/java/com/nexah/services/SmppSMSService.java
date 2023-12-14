@@ -9,6 +9,7 @@ import com.cloudhopper.smpp.type.*;
 import com.nexah.smpp.Async;
 import com.nexah.smpp.ClientSmppSessionHandler;
 import com.nexah.smpp.Service;
+import com.nexah.smpp.SmsStatus;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class SmppSMSService {
 
     private static final Logger log = LoggerFactory.getLogger(SmppSMSService.class);
 
-    public String sendTextMessage(SmppSession session, String sourceAddress, byte[] textBytes, String destinationAddress) {
+    public SmsStatus sendTextMessage(SmppSession session, String sourceAddress, byte[] textBytes, String destinationAddress) {
         if (session.isBound()) {
             try {
 
@@ -53,20 +54,16 @@ public class SmppSMSService {
                 SubmitSmResp submitResponse = session.submit(submit, 100000);
 
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
-                    return submitResponse.getMessageId();
+                    return new SmsStatus(true, submitResponse.getMessageId());
                 } else {
-//                    throw new IllegalStateException(submitResponse.getResultMessage());
-                    log.error("Send SMS Error Msg : " + submitResponse.getResultMessage());
-                    return null;
+                    return new SmsStatus(false, submitResponse.getResultMessage());
                 }
             } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException | SmppChannelException
                      | InterruptedException e) {
-                log.error(e.getMessage());
-                return null;
+                return new SmsStatus(false, e.getMessage());
             }
         }else{
-            log.error("Session not bound");
-            return null;
+            return new SmsStatus(false, "Session not bound");
         }
     }
 
@@ -82,6 +79,14 @@ public class SmppSMSService {
         }
     }
 
+    public boolean isBound(ArrayList<SmppSession> sessions, Service service) {
+        for (SmppSession session : sessions) {
+            if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
+                return true;
+            }
+        }
+        return false;
+    }
     public void unbindServiceOnDB(ArrayList<SmppSession> sessions, SmppSession session) {
         try {
             sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(session.getConfiguration().getName()));
@@ -108,6 +113,7 @@ public class SmppSMSService {
             sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
             SmppSession session = bindSession(sessions, service);
             if (session != null) {
+                service.setBound(true);
                 log.info("session bound");
             }
         } catch (Exception e) {
@@ -135,4 +141,5 @@ public class SmppSMSService {
         sessionConfig.getLoggingOptions().setLogPdu(true);
         return sessionConfig;
     }
+
 }

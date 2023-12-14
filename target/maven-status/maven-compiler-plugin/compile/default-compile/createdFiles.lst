@@ -14,3 +14,4 @@ com/nexah/http/responses/SMSResponse.class
 com/nexah/smpp/GsmUtil.class
 com/nexah/smpp/Async.class
 com/nexah/http/requests/SMSRequest.class
+com/nexah/smpp/SmsStatus.class

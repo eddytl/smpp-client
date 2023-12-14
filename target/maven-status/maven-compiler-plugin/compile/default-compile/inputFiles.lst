@@ -11,6 +11,7 @@
 /home/joel/Documents/smpp-client/src/main/java/com/nexah/http/responses/DLRresp.java
 /home/joel/Documents/smpp-client/src/main/java/com/nexah/smpp/GsmUtil.java
 /home/joel/Documents/smpp-client/src/main/java/com/nexah/http/rest/PostSMS.java
+/home/joel/Documents/smpp-client/src/main/java/com/nexah/smpp/SmsStatus.java
 /home/joel/Documents/smpp-client/src/main/java/com/nexah/utils/Constant.java
 /home/joel/Documents/smpp-client/src/main/java/com/nexah/http/responses/SMSResponse.java
 /home/joel/Documents/smpp-client/src/main/java/com/nexah/http/requests/SMSRequest.java

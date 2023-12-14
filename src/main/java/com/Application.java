@@ -15,13 +15,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EnableScheduling
 @SpringBootApplication
 @EntityScan
+@PropertySource("classpath:application.yaml")
 public class Application {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -32,23 +37,22 @@ public class Application {
     @Autowired
     private ArrayList<Service> services = new ArrayList<>();
 
-    @Value("${smpp_account.host}")
-    private String host;
-    @Value("${smpp_account.port}")
-    private int port;
-    @Value("${smpp_account.username}")
-    private String username;
-    @Value("${smpp_account.password}")
-    private String password;
-
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
-        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
-        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
+//        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
+//        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
     }
 
     @Bean(name = "services")
-    public ArrayList<Service> services() {
+    public ArrayList<Service> services(@Value("${smpp_account.host}") String host,
+                                       @Value("${smpp_account.port}") int port,
+                                       @Value("${smpp_account.username}") String username,
+                                       @Value("${smpp_account.password}") String password) {
         Service service01 = new Service();
         service01.setName("Local");
         service01.setHost(host);
@@ -102,4 +106,16 @@ public class Application {
 
     }
 
+    @Scheduled(initialDelayString = "${sms.async.rebind-delay}", fixedDelayString = "${sms.async.rebind-delay}")
+    void rebindFailSmppJob() {
+        try {
+            for (Service service : services) {
+                if (!smppSMSService.isBound(sessions, service)) {
+                    smppSMSService.rebindSession(sessions, service);
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
 }

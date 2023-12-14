@@ -58,12 +58,12 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
                 String message = CharsetUtil.decode(((DeliverSm) request).getShortMessage(),
                         mapDataCodingToCharset(((DeliverSm) request).getDataCoding()));
                 DeliveryReceipt dlr = DeliveryReceipt.parseShortMessage(message, ZoneOffset.UTC);
-                log.info("DLR {}", dlr);
+//                log.error("DLR {}", dlr);
                 PostSMS.sendDLR(msisdn, dlr);
             }
             response = request.createResponse();
         } catch (Throwable error) {
-            log.warn("Error while handling delivery", error);
+            log.error("Error while handling delivery", error);
             response = request.createResponse();
             response.setResultMessage(error.getMessage());
             response.setCommandStatus(SmppConstants.STATUS_UNKNOWNERR);

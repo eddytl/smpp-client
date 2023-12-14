@@ -21,7 +21,10 @@ package com.nexah.smpp;
  */
 
 // third party imports
-import com.cloudhopper.commons.util.*;
+
+import com.cloudhopper.commons.util.ByteUtil;
+import com.cloudhopper.commons.util.HexUtil;
+import com.cloudhopper.commons.util.StringUtil;
 
 /**
  * Utility methods for working with GSM mobile technologies.

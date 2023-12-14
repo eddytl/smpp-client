@@ -6,7 +6,10 @@ jwt:
 
 logging:
   file: /var/www/html/smpp/storage/logs/smpp.log
-
+  level:
+    root: ERROR
+    com:
+      nexah: ERROR
 sms:
   async:
     initial-delay: 30000
@@ -19,7 +22,7 @@ smpp_account:
   password: ocm@2023
 
 server:
-  port: 8081
+  port: 8080
   servlet:
     contextPath: /api
   #ssl:

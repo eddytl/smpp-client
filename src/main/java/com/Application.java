@@ -9,6 +9,7 @@ import com.nexah.smpp.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -31,10 +32,20 @@ public class Application {
     @Autowired
     private ArrayList<Service> services = new ArrayList<>();
 
+    @Value("${smpp_account.host}")
+    private String host;
+    @Value("${smpp_account.port}")
+    private int port;
+    @Value("${smpp_account.transactional.username}")
+    private String tusername;
+    @Value("${smpp_account.commercial.username}")
+    private String cusername;
+    @Value("${smpp_account.password}")
+    private String password;
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
-//        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
-//        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
+        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
+        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
     }
 
     @Bean(name = "services")
@@ -42,19 +53,19 @@ public class Application {
 
         Service service01 = new Service();
         service01.setName("Transactional");
-        service01.setHost("80.12.36.131");
-        service01.setPort(2775);
-        service01.setUsername("A2Pnexah1");
-        service01.setPassword("A2P75int");
+        service01.setHost(host);
+        service01.setPort(port);
+        service01.setUsername(tusername);
+        service01.setPassword(password);
         service01.setBound(false);
         services.add(service01);
 
         Service service02 = new Service();
         service02.setName("Commercial");
-        service02.setHost("80.12.36.131");
-        service02.setPort(2775);
-        service02.setUsername("A2Pnexah2");
-        service02.setPassword("A2P75int");
+        service02.setHost(host);
+        service02.setPort(port);
+        service02.setUsername(cusername);
+        service02.setPassword(password);
         service02.setBound(false);
         services.add(service02);
 

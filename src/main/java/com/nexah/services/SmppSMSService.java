@@ -55,15 +55,19 @@ public class SmppSMSService {
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
                     return submitResponse.getMessageId();
                 } else {
-                    throw new IllegalStateException(submitResponse.getResultMessage());
+//                    throw new IllegalStateException(submitResponse.getResultMessage());
+                    log.error("Send SMS Error Msg : " + submitResponse.getResultMessage());
+                    return null;
                 }
             } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException | SmppChannelException
                      | InterruptedException e) {
                 log.error(e.getMessage());
-                throw new IllegalStateException(e);
+                return null;
             }
+        }else{
+            log.error("Session not bound");
+            return null;
         }
-        throw new IllegalStateException("SMPP session is not connected");
     }
 
     public SmppSession bindSession(ArrayList<SmppSession> sessions, Service service) {

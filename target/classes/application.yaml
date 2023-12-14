@@ -1,13 +1,23 @@
 api:
   key: 83e825b1-2bfc-4e2b-a745-66a26c2391bf
+
 jwt:
   secret: dc7eb75c-9c87-11ed-a8fc-0242ac120002
+
 logging:
   file: /var/www/html/smpp/storage/logs/smpp.log
+
 sms:
   async:
     initial-delay: 30000
     rebind-delay: 20000
+
+smpp_account:
+  host: 172.26.72.83
+  port: 18013
+  username: nexah
+  password: ocm@2023
+
 server:
   port: 8081
   servlet:

@@ -9,6 +9,7 @@ import com.nexah.smpp.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -31,6 +32,15 @@ public class Application {
     @Autowired
     private ArrayList<Service> services = new ArrayList<>();
 
+    @Value("${smpp_account.host}")
+    private String host;
+    @Value("${smpp_account.port}")
+    private int port;
+    @Value("${smpp_account.username}")
+    private String username;
+    @Value("${smpp_account.password}")
+    private String password;
+
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
         List<Service> services = (ArrayList<Service>) ctx.getBean("services");
@@ -39,13 +49,12 @@ public class Application {
 
     @Bean(name = "services")
     public ArrayList<Service> services() {
-
         Service service01 = new Service();
         service01.setName("Local");
-        service01.setHost("172.26.72.83");
-        service01.setPort(18013);
-        service01.setUsername("nexah");
-        service01.setPassword("ocm@2023");
+        service01.setHost(host);
+        service01.setPort(port);
+        service01.setUsername(username);
+        service01.setPassword(password);
         service01.setBound(false);
         services.add(service01);
 

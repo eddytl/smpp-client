@@ -33,17 +33,19 @@ public class Application {
 
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
+        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
+        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
     }
 
     @Bean(name = "services")
     public ArrayList<Service> services() {
 
         Service service01 = new Service();
-        service01.setName("Transactional");
-        service01.setHost("80.12.36.131");
-        service01.setPort(2775);
-        service01.setUsername("A2Pnexah1");
-        service01.setPassword("A2P75int");
+        service01.setName("Local");
+        service01.setHost("172.26.72.83");
+        service01.setPort(18013);
+        service01.setUsername("nexah");
+        service01.setPassword("ocm@2023");
         service01.setBound(false);
         services.add(service01);
 
@@ -70,7 +72,7 @@ public class Application {
             for (SmppSession session : sessions) {
                 if (session.isBound()) {
                     try {
-                        session.enquireLink(new EnquireLink(), 60000);
+                        session.enquireLink(new EnquireLink(), 20000);
                     } catch (SmppTimeoutException | SmppChannelException e) {
                         log.info(session.getConfiguration().getName() + " Enquire link failed, executing reconnect; " + e);
                         smppSMSService.unbindServiceOnDB(sessions, session);

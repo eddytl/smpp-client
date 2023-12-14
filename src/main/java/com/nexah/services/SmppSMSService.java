@@ -113,7 +113,7 @@ public class SmppSMSService {
 
     private SmppClient clientBootstrap() {
         Async async = new Async();
-        return new DefaultSmppClient(Executors.newCachedThreadPool(), async.getSmppSessionSize());
+        return new DefaultSmppClient(Executors.newFixedThreadPool(5), async.getSmppSessionSize());
     }
 
     private SmppSessionConfiguration sessionConfiguration(Service service) {

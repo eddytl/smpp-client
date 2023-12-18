@@ -3,6 +3,8 @@ com/nexah/http/responses/DLRresp.class
 com/nexah/utils/Constant.class
 com/nexah/http/requests/DLRreq.class
 com/Application.class
+com/nexah/models/Message.class
+com/nexah/repositories/MessageRepository.class
 com/nexah/services/SmppSMSService.class
 com/nexah/controllers/SMSController.class
 com/nexah/http/rest/PostSMS.class

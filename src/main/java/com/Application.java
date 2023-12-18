@@ -68,12 +68,9 @@ public class Application {
     @Bean(name = "sessions")
     public ArrayList<SmppSession> sessions(List<Service> services, SmppSMSService smppSMSService) {
         for (Service service : services) {
-            Thread newThread = new Thread(() -> {
-                if (!service.getBound()) {
-                    smppSMSService.bindSession(sessions, service);
-                }
-            });
-            newThread.start();
+            if (!service.getBound()) {
+                smppSMSService.bindSession(sessions, service);
+            }
         }
         return sessions;
     }

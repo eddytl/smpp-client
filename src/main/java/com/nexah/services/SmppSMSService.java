@@ -6,23 +6,31 @@ import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
 import com.cloudhopper.smpp.tlv.Tlv;
 import com.cloudhopper.smpp.type.*;
+import com.nexah.models.Message;
+import com.nexah.repositories.MessageRepository;
 import com.nexah.smpp.Async;
 import com.nexah.smpp.ClientSmppSessionHandler;
 import com.nexah.smpp.Service;
 import com.nexah.smpp.SmsStatus;
+import com.nexah.utils.Constant;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Executors;
 
 @org.springframework.stereotype.Service
 public class SmppSMSService {
 
+    @Autowired
+    MessageRepository messageRepository;
+
     private static final Logger log = LoggerFactory.getLogger(SmppSMSService.class);
 
-    public SmsStatus sendTextMessage(SmppSession session, String sourceAddress, byte[] textBytes, String destinationAddress) {
+    public SmsStatus sendTextMessage(SmppSession session, byte[] textBytes, Message message) {
         if (session.isBound()) {
             try {
 
@@ -40,29 +48,45 @@ public class SmppSMSService {
                     submit.setShortMessage(textBytes);
                 }
 
-                if (sourceAddress.matches("\\d+")) {
-                    if (sourceAddress.length() < 8) {
-                        submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, sourceAddress));  //"Short code" TON=06 NPI=00
+                if (message.getSender().matches("\\d+")) {
+                    if (message.getSender().length() < 8) {
+                        submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, message.getSender()));  //"Short code" TON=06 NPI=00
                     } else {
-                        submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, sourceAddress)); //source address Numeric TON=01 NPI=01
+                        submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, message.getSender())); //source address Numeric TON=01 NPI=01
                     }
                 } else {
-                    submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, sourceAddress));  //source address "Alphanumeric" TON=05 NPI=00
+                    submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, message.getSender()));  //source address "Alphanumeric" TON=05 NPI=00
                 }
-                submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, destinationAddress));
+                submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, message.getMsisdn()));
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, 100000);
 
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
-                    return new SmsStatus(true, submitResponse.getMessageId());
+                    message.setRequestId(submitResponse.getMessageId());
+                    message.setStatus(Constant.SMS_SENT);
+                    message.setSubmitedAt(new Date());
+                    messageRepository.save(message);
+                    return new SmsStatus(true, message.getId());
                 } else {
+                    message.setStatus(Constant.SMS_FAILED);
+                    message.setErrorMsg(submitResponse.getResultMessage());
+                    message.setSubmitedAt(new Date());
+                    messageRepository.save(message);
                     return new SmsStatus(false, submitResponse.getResultMessage());
                 }
             } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException | SmppChannelException
                      | InterruptedException e) {
+                message.setStatus(Constant.SMS_FAILED);
+                message.setErrorMsg(e.getMessage());
+                message.setSubmitedAt(new Date());
+                messageRepository.save(message);
                 return new SmsStatus(false, e.getMessage());
             }
         }else{
+            message.setStatus(Constant.SMS_FAILED);
+            message.setErrorMsg("Session not bound");
+            message.setSubmitedAt(new Date());
+            messageRepository.save(message);
             return new SmsStatus(false, "Session not bound");
         }
     }
@@ -70,7 +94,7 @@ public class SmppSMSService {
     public SmppSession bindSession(ArrayList<SmppSession> sessions, Service service) {
         try {
             SmppSessionConfiguration config = sessionConfiguration(service);
-            SmppSession session = clientBootstrap().bind(config, new ClientSmppSessionHandler(config, sessions, this));
+            SmppSession session = clientBootstrap().bind(config, new ClientSmppSessionHandler(config, sessions, this, messageRepository));
             sessions.add(session);
             return session;
         } catch (Exception e) {

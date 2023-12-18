@@ -3,16 +3,18 @@ package com.nexah.http.requests;
 public class SMSRequest {
    private String apiKey;
    private String traffic;
+   private String dlrUrl;
    private String mobileno;
    private String sender;
    private String message;
 
-    public SMSRequest(String apiKey, String mobileno, String sender, String message, String traffic) {
+    public SMSRequest(String apiKey, String mobileno, String sender, String message, String traffic, String dlrUrl) {
         this.apiKey = apiKey;
         this.mobileno = mobileno;
         this.sender = sender;
         this.message = message;
         this.traffic = traffic;
+        this.dlrUrl = dlrUrl;
     }
 
     public String getApiKey() {
@@ -55,6 +57,14 @@ public class SMSRequest {
         this.traffic = traffic;
     }
 
+    public String getDlrUrl() {
+        return dlrUrl;
+    }
+
+    public void setDlrUrl(String dlrUrl) {
+        this.dlrUrl = dlrUrl;
+    }
+
     @Override
     public String toString() {
         return "SMSRequest{" +
@@ -63,6 +73,7 @@ public class SMSRequest {
                 ", sender='" + sender + '\'' +
                 ", message='" + message + '\'' +
                 ", traffic='" + traffic + '\'' +
+                ", dlrUrl='" + dlrUrl + '\'' +
                 '}';
     }
 }

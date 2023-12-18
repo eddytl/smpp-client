@@ -51,16 +51,16 @@ public class DLRreq {
         this.provider = provider;
     }
 
-    public void setSubmitDate(String submitDate) {
-        this.submitDate = submitDate;
+    public void setSubmitDate(Date submitDate) {
+        this.submitDate = DateUtils.dateToString(submitDate);;
     }
 
     public String getDeliverytime() {
         return deliverytime;
     }
 
-    public void setDeliverytime(ZonedDateTime deliveryDate) {
-        this.deliverytime = DateUtils.dateToString(Date.from(deliveryDate.toInstant()));
+    public void setDeliverytime(Date deliveryDate) {
+        this.deliverytime = DateUtils.dateToString(deliveryDate);
     }
 
     public String getSubmitDate() {

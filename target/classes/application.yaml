@@ -23,31 +23,28 @@ smpp_account:
 
 server:
   port: 8080
+  tomcat:
+    max-connections: 20000
+    max-threads: 10000
+    accept-count: 1000
+    min-spare-threads: 1000
   servlet:
     contextPath: /api
   #ssl:
   #  enabled: false
+
 spring:
+  main:
+    allow-bean-definition-overriding: true
   profiles:
-    active: dev
-  datasource:
-#    url: jdbc:mysql://db-smpp.c5ixpiqftj37.us-east-2.rds.amazonaws.com:3306/smpp_sms_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false&autoReconnect=true
-#    username: phpmyadmin
-#    password: b9w7wIpHQcojqLhDxrE=
-#    url: jdbc:mysql://localhost:3306/smpp_sms_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false&autoReconnect=true
-#    username: nexah
-#    password: nexah
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#  jpa:
-#    hibernate:
-#      properties:
-#        auto_quote_keyword: true
-#        format_sql: true
-#      ddl-auto: update
-#      jdbc:
-#        time_zone: UTC
-#    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-#    open-in-view: false
+    active: production
+  data:
+    mongodb:
+      host: 3.128.45.200
+      port: 27017
+      database: smpp_ocm_db
+      username: smpp_ocm_user
+      password: smppPwd
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false

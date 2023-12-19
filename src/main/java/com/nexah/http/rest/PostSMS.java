@@ -48,7 +48,7 @@ public class PostSMS {
     public static DLRresp sendDLR(Message message) {
         try {
             DLRreq dlRreq = new DLRreq();
-            dlRreq.setRequestId(message.getRequestId());
+            dlRreq.setRequestId(message.getId());
             dlRreq.setDeliveryStatus(message.getStatus());
             dlRreq.setMobileno(message.getMsisdn());
             dlRreq.setProvider("OCM Local");

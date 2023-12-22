@@ -21,19 +21,13 @@ public class PostSMS {
 
     public static SMSResponse sendsms(SmppSMSService smppSMSService, SmppSession session, Message message) {
         try {
-            if (session.isBound()) {
-                if (session.getConfiguration().getName().equals(message.getTraffic())) {
-                    byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_ISO_8859_1);
-                    SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message);
-                    if (smsStatus.isSent()) {
-                        return new SMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, smsStatus.getMessageId());
-                    } else {
-                        return new SMSResponse(Constant.SMS_ERROR, smsStatus.getMessageId(), smsStatus.getMessageId());
-                    }
-                }
-                return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, message.getId());
+
+            byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_ISO_8859_1);
+            SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message);
+            if (smsStatus.isSent()) {
+                return new SMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, smsStatus.getMessageId());
             } else {
-                return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, message.getId());
+                return new SMSResponse(Constant.SMS_ERROR, smsStatus.getMessageId(), smsStatus.getMessageId());
             }
 
         } catch (Exception e) {

@@ -38,21 +38,31 @@ public class SMSController {
                         @RequestParam(name = "mobileno") String mobileno, @RequestParam(name = "sender") String sender,
                         @RequestParam(name = "message") String message, @RequestParam(name = "dlrUrl") String dlrUrl) {
         if (apiKey.equals(localApiKey)) {
-            Message msg = new Message();
-            msg.setMsisdn(mobileno);
-            msg.setSender(sender);
-            msg.setMessage(message);
-            msg.setTraffic(traffic);
-            msg.setStatus(Constant.SMS_CREATED);
-            msg.setDlrUrl(dlrUrl);
-            msg.setDlrIsSent(false);
-            msg.setCreatedAt(new Date());
-            msg.setUpdatedAt(new Date());
-            messageRepository.save(msg);
 
-            return PostSMS.sendsms(smppSMSService, session, msg);
+            if (session.isBound()) {
+                if (session.getConfiguration().getName().equals(traffic)) {
+
+                    Message msg = new Message();
+                    msg.setMsisdn(mobileno);
+                    msg.setSender(sender);
+                    msg.setMessage(message);
+                    msg.setTraffic(traffic);
+                    msg.setStatus(Constant.SMS_CREATED);
+                    msg.setDlrUrl(dlrUrl);
+                    msg.setDlrIsSent(false);
+                    msg.setCreatedAt(new Date());
+                    msg.setUpdatedAt(new Date());
+                    messageRepository.save(msg);
+
+                    return PostSMS.sendsms(smppSMSService, session, msg);
+                } else {
+                    return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
+                }
+            } else {
+                return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
+            }
         } else {
-            return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
+            return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
         }
     }
 
@@ -61,29 +71,38 @@ public class SMSController {
     SMSResponse sendsms(@RequestBody SMSRequest smsRequest) {
         String apiKey = smsRequest.getApiKey();
         if (apiKey.equals(localApiKey)) {
-            String sender = smsRequest.getSender();
-            String message = smsRequest.getMessage();
-            String mobileno = smsRequest.getMobileno();
             String traffic = smsRequest.getTraffic();
-            String dlrUrl = smsRequest.getDlrUrl();
 
-            Message msg = new Message();
-            msg.setMsisdn(mobileno);
-            msg.setSender(sender);
-            msg.setMessage(message);
-            msg.setTraffic(traffic);
-            msg.setStatus(Constant.SMS_CREATED);
-            msg.setDlrUrl(dlrUrl);
-            msg.setDlrIsSent(false);
-            msg.setCreatedAt(new Date());
-            msg.setUpdatedAt(new Date());
-            messageRepository.save(msg);
+            if (session.isBound()) {
+                if (session.getConfiguration().getName().equals(traffic)) {
 
-            return PostSMS.sendsms(smppSMSService, session, msg);
+                    String sender = smsRequest.getSender();
+                    String message = smsRequest.getMessage();
+                    String mobileno = smsRequest.getMobileno();
+                    String dlrUrl = smsRequest.getDlrUrl();
+
+                    Message msg = new Message();
+                    msg.setMsisdn(mobileno);
+                    msg.setSender(sender);
+                    msg.setMessage(message);
+                    msg.setTraffic(traffic);
+                    msg.setStatus(Constant.SMS_CREATED);
+                    msg.setDlrUrl(dlrUrl);
+                    msg.setDlrIsSent(false);
+                    msg.setCreatedAt(new Date());
+                    msg.setUpdatedAt(new Date());
+                    messageRepository.save(msg);
+
+                    return PostSMS.sendsms(smppSMSService, session, msg);
+                } else {
+                    return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
+                }
+            } else {
+                return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
+            }
         } else {
-            return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
+            return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
         }
-
     }
 
     @PostMapping(value = "/sendbulksms")
@@ -91,38 +110,47 @@ public class SMSController {
     BulkSMSResponse sendbulksms(@RequestBody BulkSMSRequest bulkSMSRequest) {
         String apiKey = bulkSMSRequest.getApiKey();
         if (apiKey.equals(localApiKey)) {
-            String sender = bulkSMSRequest.getSender();
-            List<SMS> smsList = bulkSMSRequest.getSmsList();
             String traffic = bulkSMSRequest.getTraffic();
-            String dlrUrl = bulkSMSRequest.getDlrUrl();
-            List<SMS> results = new ArrayList<>();
 
-            for (SMS sms: smsList) {
-                Message msg = new Message();
-                msg.setMsisdn(sms.getMobileno());
-                msg.setSender(sender);
-                msg.setMessage(sms.getMessage());
-                msg.setTraffic(traffic);
-                msg.setStatus(Constant.SMS_CREATED);
-                msg.setDlrUrl(dlrUrl);
-                msg.setDlrIsSent(false);
-                msg.setCreatedAt(new Date());
-                msg.setUpdatedAt(new Date());
-                messageRepository.save(msg);
+            if (session.isBound()) {
+                if (session.getConfiguration().getName().equals(traffic)) {
 
-                SMS smsContent = new SMS();
-                smsContent.setSmsId(sms.getSmsId());
-                smsContent.setMobileno(sms.getMobileno());
-                SMSResponse smsResponse = PostSMS.sendsms(smppSMSService, session, msg);
-                smsContent.setMsgId(smsResponse.getMsgId());
-                smsContent.setStatus(smsResponse.getStatus());
-                smsContent.setMessage(smsResponse.getMessage());
+                    List<SMS> smsList = bulkSMSRequest.getSmsList();
+                    String dlrUrl = bulkSMSRequest.getDlrUrl();
+                    String sender = bulkSMSRequest.getSender();
+                    List<SMS> results = new ArrayList<>();
 
-                results.add(smsContent);
+                    for (SMS sms : smsList) {
+                        Message msg = new Message();
+                        msg.setMsisdn(sms.getMobileno());
+                        msg.setSender(sender);
+                        msg.setMessage(sms.getMessage());
+                        msg.setTraffic(traffic);
+                        msg.setStatus(Constant.SMS_CREATED);
+                        msg.setDlrUrl(dlrUrl);
+                        msg.setDlrIsSent(false);
+                        msg.setCreatedAt(new Date());
+                        msg.setUpdatedAt(new Date());
+                        messageRepository.save(msg);
+
+                        SMS smsContent = new SMS();
+                        smsContent.setSmsId(sms.getSmsId());
+                        smsContent.setMobileno(sms.getMobileno());
+                        SMSResponse smsResponse = PostSMS.sendsms(smppSMSService, session, msg);
+                        smsContent.setMsgId(smsResponse.getMsgId());
+                        smsContent.setStatus(smsResponse.getStatus());
+                        smsContent.setMessage(smsResponse.getMessage());
+                        results.add(smsContent);
+                    }
+                    return new BulkSMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, results);
+                } else {
+                    return new BulkSMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
+                }
+            } else {
+                return new BulkSMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
             }
-            return new BulkSMSResponse(Constant.OK, results);
         } else {
-            return new BulkSMSResponse(Constant.SMS_ERROR, null);
+            return new BulkSMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
         }
 
     }

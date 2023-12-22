@@ -16,6 +16,7 @@ public class Message {
     private String traffic;
     private String status;
     private String errorMsg;
+    private int retry;
     private Date submitedAt;
     private Date deliveredAt;
     private String dlrUrl;
@@ -128,6 +129,14 @@ public class Message {
 
     public Date getUpdatedAt() {
         return updatedAt;
+    }
+
+    public int getRetry() {
+        return retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
     }
 
     public void setUpdatedAt(Date updatedAt) {

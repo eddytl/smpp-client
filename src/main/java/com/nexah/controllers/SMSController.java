@@ -8,7 +8,9 @@ import com.nexah.http.responses.BulkSMSResponse;
 import com.nexah.http.responses.SMSResponse;
 import com.nexah.http.rest.PostSMS;
 import com.nexah.models.Message;
+import com.nexah.models.Setting;
 import com.nexah.repositories.MessageRepository;
+import com.nexah.repositories.SettingRepository;
 import com.nexah.services.SmppSMSService;
 import com.nexah.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class SMSController {
     String localApiKey;
     @Autowired
     MessageRepository messageRepository;
+    @Autowired
+    SettingRepository settingRepository;
 
     @GetMapping(value = "/sendsms")
     public @ResponseBody
@@ -41,20 +45,26 @@ public class SMSController {
 
             if (session.isBound()) {
                 if (session.getConfiguration().getName().equals(traffic)) {
+                    if (sender.length() <= 11 && mobileno.length() == 12 && !message.isEmpty() && message.length() <= 1200) {
+                        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
-                    Message msg = new Message();
-                    msg.setMsisdn(mobileno);
-                    msg.setSender(sender);
-                    msg.setMessage(message);
-                    msg.setTraffic(traffic);
-                    msg.setStatus(Constant.SMS_CREATED);
-                    msg.setDlrUrl(dlrUrl);
-                    msg.setDlrIsSent(false);
-                    msg.setCreatedAt(new Date());
-                    msg.setUpdatedAt(new Date());
-                    messageRepository.save(msg);
+                        Message msg = new Message();
+                        msg.setMsisdn(mobileno);
+                        msg.setSender(sender);
+                        msg.setMessage(message);
+                        msg.setTraffic(traffic);
+                        msg.setStatus(Constant.SMS_CREATED);
+                        msg.setRetry(0);
+                        msg.setDlrUrl(dlrUrl);
+                        msg.setDlrIsSent(false);
+                        msg.setCreatedAt(new Date());
+                        msg.setUpdatedAt(new Date());
+                        messageRepository.save(msg);
 
-                    return PostSMS.sendsms(smppSMSService, session, msg);
+                        return PostSMS.sendsms(smppSMSService, session, msg, setting);
+                    } else {
+                        return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
+                    }
                 } else {
                     return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
                 }
@@ -64,6 +74,7 @@ public class SMSController {
         } else {
             return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
         }
+
     }
 
     @PostMapping(value = "/sendsms")
@@ -75,25 +86,31 @@ public class SMSController {
 
             if (session.isBound()) {
                 if (session.getConfiguration().getName().equals(traffic)) {
+                    Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
                     String sender = smsRequest.getSender();
                     String message = smsRequest.getMessage();
                     String mobileno = smsRequest.getMobileno();
                     String dlrUrl = smsRequest.getDlrUrl();
 
-                    Message msg = new Message();
-                    msg.setMsisdn(mobileno);
-                    msg.setSender(sender);
-                    msg.setMessage(message);
-                    msg.setTraffic(traffic);
-                    msg.setStatus(Constant.SMS_CREATED);
-                    msg.setDlrUrl(dlrUrl);
-                    msg.setDlrIsSent(false);
-                    msg.setCreatedAt(new Date());
-                    msg.setUpdatedAt(new Date());
-                    messageRepository.save(msg);
+                    if (sender.length() <= 11 && mobileno.length() == 12 && !message.isEmpty() && message.length() <= 1200) {
+                        Message msg = new Message();
+                        msg.setMsisdn(mobileno);
+                        msg.setSender(sender);
+                        msg.setMessage(message);
+                        msg.setTraffic(traffic);
+                        msg.setRetry(0);
+                        msg.setStatus(Constant.SMS_CREATED);
+                        msg.setDlrUrl(dlrUrl);
+                        msg.setDlrIsSent(false);
+                        msg.setCreatedAt(new Date());
+                        msg.setUpdatedAt(new Date());
+                        messageRepository.save(msg);
 
-                    return PostSMS.sendsms(smppSMSService, session, msg);
+                        return PostSMS.sendsms(smppSMSService, session, msg, setting);
+                    } else {
+                        return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
+                    }
                 } else {
                     return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
                 }
@@ -111,43 +128,54 @@ public class SMSController {
         String apiKey = bulkSMSRequest.getApiKey();
         if (apiKey.equals(localApiKey)) {
             String traffic = bulkSMSRequest.getTraffic();
+            String sender = bulkSMSRequest.getSender();
 
-            if (session.isBound()) {
-                if (session.getConfiguration().getName().equals(traffic)) {
+            if (!sender.isEmpty() && sender.length() <= 11) {
+                if (session.isBound()) {
+                    if (session.getConfiguration().getName().equals(traffic)) {
 
-                    List<SMS> smsList = bulkSMSRequest.getSmsList();
-                    String dlrUrl = bulkSMSRequest.getDlrUrl();
-                    String sender = bulkSMSRequest.getSender();
-                    List<SMS> results = new ArrayList<>();
+                        List<SMS> smsList = bulkSMSRequest.getSmsList();
+                        String dlrUrl = bulkSMSRequest.getDlrUrl();
+                        List<SMS> results = new ArrayList<>();
+                        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
-                    for (SMS sms : smsList) {
-                        Message msg = new Message();
-                        msg.setMsisdn(sms.getMobileno());
-                        msg.setSender(sender);
-                        msg.setMessage(sms.getMessage());
-                        msg.setTraffic(traffic);
-                        msg.setStatus(Constant.SMS_CREATED);
-                        msg.setDlrUrl(dlrUrl);
-                        msg.setDlrIsSent(false);
-                        msg.setCreatedAt(new Date());
-                        msg.setUpdatedAt(new Date());
-                        messageRepository.save(msg);
+                        for (SMS sms : smsList) {
 
-                        SMS smsContent = new SMS();
-                        smsContent.setSmsId(sms.getSmsId());
-                        smsContent.setMobileno(sms.getMobileno());
-                        SMSResponse smsResponse = PostSMS.sendsms(smppSMSService, session, msg);
-                        smsContent.setMsgId(smsResponse.getMsgId());
-                        smsContent.setStatus(smsResponse.getStatus());
-                        smsContent.setMessage(smsResponse.getMessage());
-                        results.add(smsContent);
+                            if (sms.getMobileno().length() == 12 && !sms.getMessage().isEmpty() && sms.getMessage().length() <= 1200) {
+                                Message msg = new Message();
+                                msg.setMsisdn(sms.getMobileno());
+                                msg.setSender(sender);
+                                msg.setMessage(sms.getMessage());
+                                msg.setTraffic(traffic);
+                                msg.setRetry(0);
+                                msg.setStatus(Constant.SMS_CREATED);
+                                msg.setDlrUrl(dlrUrl);
+                                msg.setDlrIsSent(false);
+                                msg.setCreatedAt(new Date());
+                                msg.setUpdatedAt(new Date());
+                                messageRepository.save(msg);
+
+                                SMS smsContent = new SMS();
+                                smsContent.setSmsId(sms.getSmsId());
+                                smsContent.setMobileno(sms.getMobileno());
+                                SMSResponse smsResponse = PostSMS.sendsms(smppSMSService, session, msg, setting);
+                                smsContent.setMsgId(smsResponse.getMsgId());
+                                smsContent.setStatus(smsResponse.getStatus());
+                                smsContent.setMessage(smsResponse.getMessage());
+                                results.add(smsContent);
+                            } else {
+                                return new BulkSMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
+                            }
+                        }
+                        return new BulkSMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, results);
+                    } else {
+                        return new BulkSMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
                     }
-                    return new BulkSMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, results);
                 } else {
-                    return new BulkSMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
+                    return new BulkSMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
                 }
-            } else {
-                return new BulkSMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
+            }else {
+                return new BulkSMSResponse(Constant.SMS_ERROR, Constant.INVALID_SID, null);
             }
         } else {
             return new BulkSMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);

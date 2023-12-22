@@ -20,8 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @org.springframework.stereotype.Service
 public class SmppSMSService {
@@ -33,8 +36,13 @@ public class SmppSMSService {
 
     private static final Logger log = LoggerFactory.getLogger(SmppSMSService.class);
 
-    public SmsStatus sendTextMessage(SmppSession session, byte[] textBytes, Message message) {
-        if (session.isBound()) {
+    public SmsStatus sendTextMessage(SmppSession session, byte[] textBytes, Message message, Setting setting) {
+
+        int retry = 0;
+        String error = null;
+        List<String> errors = Arrays.asList(setting.getSmppErrors().split(","));
+        while (retry <= setting.getMaxRetry() && !errors.contains(error)) {
+
             try {
 
                 SubmitSm submit = new SubmitSm();
@@ -67,30 +75,44 @@ public class SmppSMSService {
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
                     message.setRequestId(submitResponse.getMessageId());
                     message.setStatus(Constant.SMS_SENT);
+                    message.setRetry(retry);
                     message.setSubmitedAt(new Date());
                     messageRepository.save(message);
                     return new SmsStatus(true, message.getId());
                 } else {
                     message.setStatus(Constant.SMS_FAILED);
                     message.setErrorMsg(submitResponse.getResultMessage());
+                    message.setRetry(retry);
                     message.setSubmitedAt(new Date());
                     messageRepository.save(message);
-                    return new SmsStatus(false, submitResponse.getResultMessage());
+                    error = submitResponse.getResultMessage();
                 }
-            } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException | SmppChannelException
+            } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException |
+                     SmppChannelException
                      | InterruptedException e) {
                 message.setStatus(Constant.SMS_FAILED);
-                message.setErrorMsg(e.getMessage());
+                message.setErrorMsg(e.getLocalizedMessage());
                 message.setSubmitedAt(new Date());
+                message.setRetry(retry);
                 messageRepository.save(message);
-                return new SmsStatus(false, e.getMessage());
+                error = e.getLocalizedMessage();
             }
-        }else{
-            message.setStatus(Constant.SMS_FAILED);
-            message.setErrorMsg("Session not bound");
-            message.setSubmitedAt(new Date());
-            messageRepository.save(message);
-            return new SmsStatus(false, "Session not bound");
+            // Increment the retry counter
+            retry++;
+
+            if (retry <= setting.getMaxRetry() && !errors.contains(error)) {
+                // Wait before retrying
+                waitBeforeRetry(setting);
+            }
+        }
+        return new SmsStatus(false, error);
+    }
+
+    private void waitBeforeRetry(Setting setting) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(setting.getRetryDelay());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -106,9 +128,9 @@ public class SmppSMSService {
     }
 
     public boolean isBound(SmppSession session, Service service) {
-            if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
-                return true;
-            }
+        if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
+            return true;
+        }
         return false;
     }
 

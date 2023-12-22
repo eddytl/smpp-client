@@ -9,11 +9,14 @@ public class Setting {
     private String id;
     private int windowsSize;
     private int submitSmTimeOut;
+    private int maxRetry;
+    private int retryDelay;
     private String serviceName;
     private String host;
     private int port;
     private String username;
     private String password;
+    private String smppErrors;
 
     public Setting() {
     }
@@ -80,5 +83,29 @@ public class Setting {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getMaxRetry() {
+        return maxRetry;
+    }
+
+    public void setMaxRetry(int maxRetry) {
+        this.maxRetry = maxRetry;
+    }
+
+    public int getRetryDelay() {
+        return retryDelay;
+    }
+
+    public void setRetryDelay(int retryDelay) {
+        this.retryDelay = retryDelay;
+    }
+
+    public String getSmppErrors() {
+        return smppErrors;
+    }
+
+    public void setSmppErrors(String smppErrors) {
+        this.smppErrors = smppErrors;
     }
 }

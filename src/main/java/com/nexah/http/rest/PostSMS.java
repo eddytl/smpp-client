@@ -6,6 +6,7 @@ import com.nexah.http.requests.DLRreq;
 import com.nexah.http.responses.DLRresp;
 import com.nexah.http.responses.SMSResponse;
 import com.nexah.models.Message;
+import com.nexah.models.Setting;
 import com.nexah.services.SmppSMSService;
 import com.nexah.smpp.SmsStatus;
 import com.nexah.utils.Constant;
@@ -19,11 +20,11 @@ public class PostSMS {
     private static final Logger log = LoggerFactory.getLogger(PostSMS.class);
     protected static RestTemplate restTemplate = new RestTemplate();
 
-    public static SMSResponse sendsms(SmppSMSService smppSMSService, SmppSession session, Message message) {
+    public static SMSResponse sendsms(SmppSMSService smppSMSService, SmppSession session, Message message, Setting setting) {
         try {
 
             byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_ISO_8859_1);
-            SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message);
+            SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message, setting);
             if (smsStatus.isSent()) {
                 return new SMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, smsStatus.getMessageId());
             } else {

@@ -27,14 +27,22 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     private static final Logger log = LoggerFactory.getLogger(ClientSmppSessionHandler.class);
     private SmppSMSService smppSMSService;
     private SmppSessionConfiguration smppSessionConfiguration;
-    private ArrayList<SmppSession> sessions;
+//    private ArrayList<SmppSession> sessions;
+    private SmppSession session;
     private MessageRepository messageRepository;
 
 
-    public ClientSmppSessionHandler(SmppSessionConfiguration smppSessionConfiguration, ArrayList<SmppSession> sessions,
+//    public ClientSmppSessionHandler(SmppSessionConfiguration smppSessionConfiguration, ArrayList<SmppSession> sessions,
+//                                    SmppSMSService smppSMSService, MessageRepository messageRepository) {
+//        this.smppSMSService = smppSMSService;
+//        this.sessions = sessions;
+//        this.smppSessionConfiguration = smppSessionConfiguration;
+//        this.messageRepository = messageRepository;
+//    }
+    public ClientSmppSessionHandler(SmppSessionConfiguration smppSessionConfiguration, SmppSession session,
                                     SmppSMSService smppSMSService, MessageRepository messageRepository) {
         this.smppSMSService = smppSMSService;
-        this.sessions = sessions;
+        this.session = session;
         this.smppSessionConfiguration = smppSessionConfiguration;
         this.messageRepository = messageRepository;
     }
@@ -54,7 +62,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     @Override
     public void fireChannelUnexpectedlyClosed() {
         super.fireChannelUnexpectedlyClosed();
-        smppSMSService.unbindServiceOnDB(sessions, smppSessionConfiguration);
+//        smppSMSService.unbindServiceOnDB(session, smppSessionConfiguration);
+        session.close();
     }
 
     @Override

@@ -45,7 +45,7 @@ public class SMSController {
 
             if (session.isBound()) {
                 if (session.getConfiguration().getName().equals(traffic)) {
-                    if (sender.length() <= 11 && mobileno.length() == 12 && !message.isEmpty() && message.length() <= 1200) {
+                    if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
                         Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
                         Message msg = new Message();
@@ -86,14 +86,15 @@ public class SMSController {
 
             if (session.isBound()) {
                 if (session.getConfiguration().getName().equals(traffic)) {
-                    Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
                     String sender = smsRequest.getSender();
                     String message = smsRequest.getMessage();
                     String mobileno = smsRequest.getMobileno();
                     String dlrUrl = smsRequest.getDlrUrl();
 
-                    if (sender.length() <= 11 && mobileno.length() == 12 && !message.isEmpty() && message.length() <= 1200) {
+                    if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
+                        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
+
                         Message msg = new Message();
                         msg.setMsisdn(mobileno);
                         msg.setSender(sender);
@@ -130,18 +131,19 @@ public class SMSController {
             String traffic = bulkSMSRequest.getTraffic();
             String sender = bulkSMSRequest.getSender();
 
-            if (!sender.isEmpty() && sender.length() <= 11) {
+            if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH) {
                 if (session.isBound()) {
                     if (session.getConfiguration().getName().equals(traffic)) {
 
                         List<SMS> smsList = bulkSMSRequest.getSmsList();
                         String dlrUrl = bulkSMSRequest.getDlrUrl();
                         List<SMS> results = new ArrayList<>();
-                        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
                         for (SMS sms : smsList) {
+                            SMS smsContent = new SMS();
+                            if (sms.getMobileno().length() == Constant.MSISDN_LENGTH && !sms.getMessage().isEmpty() && sms.getMessage().length() <= Constant.MAX_MSG_LENGTH) {
+                                Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
 
-                            if (sms.getMobileno().length() == 12 && !sms.getMessage().isEmpty() && sms.getMessage().length() <= 1200) {
                                 Message msg = new Message();
                                 msg.setMsisdn(sms.getMobileno());
                                 msg.setSender(sender);
@@ -155,17 +157,21 @@ public class SMSController {
                                 msg.setUpdatedAt(new Date());
                                 messageRepository.save(msg);
 
-                                SMS smsContent = new SMS();
                                 smsContent.setSmsId(sms.getSmsId());
                                 smsContent.setMobileno(sms.getMobileno());
                                 SMSResponse smsResponse = PostSMS.sendsms(smppSMSService, session, msg, setting);
                                 smsContent.setMsgId(smsResponse.getMsgId());
                                 smsContent.setStatus(smsResponse.getStatus());
                                 smsContent.setMessage(smsResponse.getMessage());
-                                results.add(smsContent);
                             } else {
-                                return new BulkSMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
+
+                                smsContent.setSmsId(sms.getSmsId());
+                                smsContent.setMobileno(sms.getMobileno());
+                                smsContent.setMsgId(null);
+                                smsContent.setStatus(Constant.SMS_ERROR);
+                                smsContent.setMessage("mobileno or message length is no valid");
                             }
+                            results.add(smsContent);
                         }
                         return new BulkSMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, results);
                     } else {
@@ -174,7 +180,7 @@ public class SMSController {
                 } else {
                     return new BulkSMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
                 }
-            }else {
+            } else {
                 return new BulkSMSResponse(Constant.SMS_ERROR, Constant.INVALID_SID, null);
             }
         } else {

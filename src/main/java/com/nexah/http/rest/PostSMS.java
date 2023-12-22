@@ -13,26 +13,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-
 
 public class PostSMS {
 
     private static final Logger log = LoggerFactory.getLogger(PostSMS.class);
     protected static RestTemplate restTemplate = new RestTemplate();
 
-    public static SMSResponse sendsms(SmppSMSService smppSMSService, ArrayList<SmppSession> sessions, Message message) {
+    public static SMSResponse sendsms(SmppSMSService smppSMSService, SmppSession session, Message message) {
         try {
-            if (!sessions.isEmpty()) {
-                for (SmppSession session : sessions) {
-                    if (session.getConfiguration().getName().equals(message.getTraffic())) {
-                        byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_ISO_8859_1);
-                        SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message);
-                        if (smsStatus.isSent()){
-                            return new SMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, smsStatus.getMessageId());
-                        }else{
-                            return new SMSResponse(Constant.SMS_ERROR,  smsStatus.getMessageId(), smsStatus.getMessageId());
-                        }
+            if (session.isBound()) {
+                if (session.getConfiguration().getName().equals(message.getTraffic())) {
+                    byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_ISO_8859_1);
+                    SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message);
+                    if (smsStatus.isSent()) {
+                        return new SMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, smsStatus.getMessageId());
+                    } else {
+                        return new SMSResponse(Constant.SMS_ERROR, smsStatus.getMessageId(), smsStatus.getMessageId());
                     }
                 }
                 return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, message.getId());
@@ -56,9 +52,9 @@ public class PostSMS {
             dlRreq.setSubmitDate(message.getSubmitedAt());
             dlRreq.setDeliverytime(message.getDeliveredAt());
             return restTemplate.postForObject(message.getDlrUrl(), dlRreq, DLRresp.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
-            return  null;
+            return null;
         }
     }
 }

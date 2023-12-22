@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Executors;
 
@@ -98,58 +97,23 @@ public class SmppSMSService {
     public SmppSession bindSession(SmppSession session, Service service) {
         try {
             SmppSessionConfiguration config = sessionConfiguration(service);
-            session = clientBootstrap().bind(config, new ClientSmppSessionHandler(config, session, this, messageRepository));
-//            sessions.add(session);
+            session = clientBootstrap().bind(config, new ClientSmppSessionHandler(session, messageRepository));
             return session;
         } catch (Exception e) {
             log.error(e.getMessage());
             return null;
         }
     }
-//    public SmppSession bindSession(SmppSession session, Service service) {
-//        try {
-//            SmppSessionConfiguration config = sessionConfiguration(service);
-//           session = clientBootstrap().bind(config, new ClientSmppSessionHandler(config, session, this, messageRepository));
-////            sessions.add(session);
-//            return session;
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return null;
-//        }
-//    }
 
     public boolean isBound(SmppSession session, Service service) {
-//        for (SmppSession session : sessions) {
             if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
                 return true;
             }
-//        }
         return false;
-    }
-    public void unbindServiceOnDB(ArrayList<SmppSession> sessions, SmppSession session) {
-        try {
-            sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(session.getConfiguration().getName()));
-            log.info(session.getConfiguration().getName() + " Service unbind on Database ready for reconnecting");
-//            sendMailUnbind(appConfigRepository, emailService, service.getName());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
-
-
-    public void unbindServiceOnDB(ArrayList<SmppSession> sessions, SmppSessionConfiguration smppSessionConfiguration
-    ) {
-        try {
-            sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(smppSessionConfiguration.getName()));
-            log.info(smppSessionConfiguration.getName() + " Provider unbind on Database ready for reconnecting");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
     }
 
     public void rebindSession(SmppSession session, Service service) {
         try {
-//            sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
             session = bindSession(session, service);
             if (session != null) {
                 service.setBound(true);

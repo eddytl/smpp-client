@@ -3,7 +3,6 @@ package com.nexah.smpp;
 import com.cloudhopper.commons.charset.CharsetUtil;
 import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.smpp.SmppSession;
-import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppSessionHandler;
 import com.cloudhopper.smpp.pdu.DeliverSm;
 import com.cloudhopper.smpp.pdu.PduRequest;
@@ -12,7 +11,6 @@ import com.nexah.http.responses.DLRresp;
 import com.nexah.http.rest.PostSMS;
 import com.nexah.models.Message;
 import com.nexah.repositories.MessageRepository;
-import com.nexah.services.SmppSMSService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,30 +18,16 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     private static final Logger log = LoggerFactory.getLogger(ClientSmppSessionHandler.class);
-    private SmppSMSService smppSMSService;
-    private SmppSessionConfiguration smppSessionConfiguration;
-//    private ArrayList<SmppSession> sessions;
     private SmppSession session;
     private MessageRepository messageRepository;
 
 
-//    public ClientSmppSessionHandler(SmppSessionConfiguration smppSessionConfiguration, ArrayList<SmppSession> sessions,
-//                                    SmppSMSService smppSMSService, MessageRepository messageRepository) {
-//        this.smppSMSService = smppSMSService;
-//        this.sessions = sessions;
-//        this.smppSessionConfiguration = smppSessionConfiguration;
-//        this.messageRepository = messageRepository;
-//    }
-    public ClientSmppSessionHandler(SmppSessionConfiguration smppSessionConfiguration, SmppSession session,
-                                    SmppSMSService smppSMSService, MessageRepository messageRepository) {
-        this.smppSMSService = smppSMSService;
+    public ClientSmppSessionHandler(SmppSession session, MessageRepository messageRepository) {
         this.session = session;
-        this.smppSessionConfiguration = smppSessionConfiguration;
         this.messageRepository = messageRepository;
     }
 
@@ -62,7 +46,6 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     @Override
     public void fireChannelUnexpectedlyClosed() {
         super.fireChannelUnexpectedlyClosed();
-//        smppSMSService.unbindServiceOnDB(session, smppSessionConfiguration);
         session.close();
     }
 

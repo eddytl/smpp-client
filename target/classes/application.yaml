@@ -15,14 +15,8 @@ sms:
     initial-delay: 30000
     rebind-delay: 20000
 
-smpp_account:
-  host: 172.26.72.83
-  port: 18013
-  username: nexah
-  password: ocm@2023
-
 server:
-  port: 8080
+  port: 8081
   tomcat:
     max-connections: 20000
     max-threads: 10000

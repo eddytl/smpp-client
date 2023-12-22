@@ -2,6 +2,8 @@ package com.nexah.http.requests;
 
 public class SMS {
     private String smsId;
+    private String status;
+
     private String msgId;
     private String mobileno;
     private String message;
@@ -32,6 +34,14 @@ public class SMS {
 
     public String getSmsId() {
         return smsId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setSmsId(String smsId) {

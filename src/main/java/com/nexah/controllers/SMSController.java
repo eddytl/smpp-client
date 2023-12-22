@@ -24,7 +24,7 @@ import java.util.List;
 public class SMSController {
 
     @Autowired
-    ArrayList<SmppSession> sessions;
+    SmppSession session;
     @Autowired
     SmppSMSService smppSMSService;
     @Value("${api.key}")
@@ -50,7 +50,7 @@ public class SMSController {
             msg.setUpdatedAt(new Date());
             messageRepository.save(msg);
 
-            return PostSMS.sendsms(smppSMSService, sessions, msg);
+            return PostSMS.sendsms(smppSMSService, session, msg);
         } else {
             return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
         }
@@ -79,7 +79,7 @@ public class SMSController {
             msg.setUpdatedAt(new Date());
             messageRepository.save(msg);
 
-            return PostSMS.sendsms(smppSMSService, sessions, msg);
+            return PostSMS.sendsms(smppSMSService, session, msg);
         } else {
             return new SMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
         }
@@ -113,13 +113,16 @@ public class SMSController {
                 SMS smsContent = new SMS();
                 smsContent.setSmsId(sms.getSmsId());
                 smsContent.setMobileno(sms.getMobileno());
-                String msgId = PostSMS.sendsms(smppSMSService, sessions, msg).getMsgId();
-                smsContent.setMsgId(msgId);
+                SMSResponse smsResponse = PostSMS.sendsms(smppSMSService, session, msg);
+                smsContent.setMsgId(smsResponse.getMsgId());
+                smsContent.setStatus(smsResponse.getStatus());
+                smsContent.setMessage(smsResponse.getMessage());
+
                 results.add(smsContent);
             }
-            return new BulkSMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, results);
+            return new BulkSMSResponse(Constant.OK, results);
         } else {
-            return new BulkSMSResponse(Constant.SMS_ERROR, "Invalid ApiKey", null);
+            return new BulkSMSResponse(Constant.SMS_ERROR, null);
         }
 
     }

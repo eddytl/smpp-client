@@ -7,15 +7,13 @@ import java.util.List;
 public class BulkSMSResponse {
 
     private String status;
-    private String message;
     private List<SMS> smsList;
 
     public BulkSMSResponse() {
     }
 
-    public BulkSMSResponse(String status, String message, List<SMS> smsList) {
+    public BulkSMSResponse(String status, List<SMS> smsList) {
         this.status = status;
-        this.message = message;
         this.smsList = smsList;
     }
 
@@ -25,14 +23,6 @@ public class BulkSMSResponse {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public List<SMS> getSmsList() {
@@ -47,7 +37,6 @@ public class BulkSMSResponse {
     public String toString() {
         return "BulkSMSResponse{" +
                 "status='" + status + '\'' +
-                ", message='" + message + '\'' +
                 ", smsList=" + smsList +
                 '}';
     }

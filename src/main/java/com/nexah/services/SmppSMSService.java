@@ -70,7 +70,7 @@ public class SmppSMSService {
                 }
                 submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, message.getMsisdn()));
                 DefaultChannelFuture.setUseDeadLockChecker(false);
-                SubmitSmResp submitResponse = session.submit(submit, 60000);
+                SubmitSmResp submitResponse = session.submit(submit, setting.getSubmitSmTimeOut());
 
                 if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
                     message.setRequestId(submitResponse.getMessageId());

@@ -43,34 +43,36 @@ public class SMSController {
                         @RequestParam(name = "message") String message, @RequestParam(name = "dlrUrl") String dlrUrl) {
         if (apiKey.equals(localApiKey)) {
 
-            if (session.isBound()) {
-                if (session.getConfiguration().getName().equals(traffic)) {
-                    if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
-                        Setting setting = settingRepository.findAll().get(0);
 
-                        Message msg = new Message();
-                        msg.setMsisdn(mobileno);
-                        msg.setSender(sender);
-                        msg.setMessage(message);
-                        msg.setTraffic(traffic);
-                        msg.setStatus(Constant.SMS_CREATED);
-                        msg.setRetry(0);
-                        msg.setDlrUrl(dlrUrl);
-                        msg.setDlrIsSent(false);
-                        msg.setCreatedAt(new Date());
-                        msg.setUpdatedAt(new Date());
-                        messageRepository.save(msg);
+            if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
+                Setting setting = settingRepository.findAll().get(0);
 
+                Message msg = new Message();
+                msg.setMsisdn(mobileno);
+                msg.setSender(sender);
+                msg.setMessage(message);
+                msg.setTraffic(traffic);
+                msg.setStatus(Constant.SMS_CREATED);
+                msg.setRetry(0);
+                msg.setDlrUrl(dlrUrl);
+                msg.setDlrIsSent(false);
+                msg.setCreatedAt(new Date());
+                msg.setUpdatedAt(new Date());
+                messageRepository.save(msg);
+
+                if (session.isBound()) {
+                    if (session.getConfiguration().getName().equals(traffic)) {
                         return PostSMS.sendsms(smppSMSService, session, msg, setting);
                     } else {
-                        return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
+                        return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, msg.getId());
                     }
                 } else {
-                    return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
+                    return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, msg.getId());
                 }
             } else {
-                return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
+                return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
             }
+
         } else {
             return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
         }
@@ -84,43 +86,44 @@ public class SMSController {
         if (apiKey.equals(localApiKey)) {
             String traffic = smsRequest.getTraffic();
 
-            if (session.isBound()) {
-                if (session.getConfiguration().getName().equals(traffic)) {
 
-                    String sender = smsRequest.getSender();
-                    String message = smsRequest.getMessage();
-                    String mobileno = smsRequest.getMobileno();
-                    String dlrUrl = smsRequest.getDlrUrl();
+            String sender = smsRequest.getSender();
+            String message = smsRequest.getMessage();
+            String mobileno = smsRequest.getMobileno();
+            String dlrUrl = smsRequest.getDlrUrl();
 
-                    if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
-                        Setting setting = settingRepository.findAll().get(0);
+            if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
+                Setting setting = settingRepository.findAll().get(0);
 
-                        Message msg = new Message();
-                        msg.setMsisdn(mobileno);
-                        msg.setSender(sender);
-                        msg.setMessage(message);
-                        msg.setTraffic(traffic);
-                        msg.setRetry(0);
-                        msg.setStatus(Constant.SMS_CREATED);
-                        msg.setDlrUrl(dlrUrl);
-                        msg.setDlrIsSent(false);
-                        msg.setCreatedAt(new Date());
-                        msg.setUpdatedAt(new Date());
-                        messageRepository.save(msg);
+                Message msg = new Message();
+                msg.setMsisdn(mobileno);
+                msg.setSender(sender);
+                msg.setMessage(message);
+                msg.setTraffic(traffic);
+                msg.setRetry(0);
+                msg.setStatus(Constant.SMS_CREATED);
+                msg.setDlrUrl(dlrUrl);
+                msg.setDlrIsSent(false);
+                msg.setCreatedAt(new Date());
+                msg.setUpdatedAt(new Date());
+                messageRepository.save(msg);
 
+                if (session.isBound()) {
+                    if (session.getConfiguration().getName().equals(traffic)) {
                         return PostSMS.sendsms(smppSMSService, session, msg, setting);
                     } else {
-                        return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
+                        return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, msg.getId());
                     }
                 } else {
-                    return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
+                    return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, msg.getId());
                 }
             } else {
-                return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, null);
+                return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
             }
         } else {
-            return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
+            return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, null);
         }
+
     }
 
     @PostMapping(value = "/sendbulksms")

@@ -72,6 +72,8 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
                         msg.setDlrIsSent(true);
                         messageRepository.save(msg);
                     }
+                }else{
+                    log.error("Message not found for DLR " + dlr.toString());
                 }
             }
             response = request.createResponse();

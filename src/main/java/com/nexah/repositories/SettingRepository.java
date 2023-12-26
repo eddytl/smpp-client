@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface SettingRepository extends MongoRepository<Setting, String> {
-    Optional<Setting> findById(String id);
     List<Setting> findAll();
 }

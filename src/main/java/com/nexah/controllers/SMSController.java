@@ -46,7 +46,7 @@ public class SMSController {
             if (session.isBound()) {
                 if (session.getConfiguration().getName().equals(traffic)) {
                     if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
-                        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
+                        Setting setting = settingRepository.findAll().get(0);
 
                         Message msg = new Message();
                         msg.setMsisdn(mobileno);
@@ -93,7 +93,7 @@ public class SMSController {
                     String dlrUrl = smsRequest.getDlrUrl();
 
                     if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
-                        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
+                        Setting setting = settingRepository.findAll().get(0);
 
                         Message msg = new Message();
                         msg.setMsisdn(mobileno);
@@ -142,7 +142,7 @@ public class SMSController {
                         for (SMS sms : smsList) {
                             SMS smsContent = new SMS();
                             if (sms.getMobileno().length() == Constant.MSISDN_LENGTH && !sms.getMessage().isEmpty() && sms.getMessage().length() <= Constant.MAX_MSG_LENGTH) {
-                                Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
+                                Setting setting = settingRepository.findAll().get(0);
 
                                 Message msg = new Message();
                                 msg.setMsisdn(sms.getMobileno());

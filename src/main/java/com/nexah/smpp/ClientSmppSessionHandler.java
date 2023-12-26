@@ -59,7 +59,7 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
                 String message = CharsetUtil.decode(((DeliverSm) request).getShortMessage(),
                         mapDataCodingToCharset(((DeliverSm) request).getDataCoding()));
                 DeliveryReceipt dlr = DeliveryReceipt.parseShortMessage(message, ZoneOffset.UTC);
-                Message msg = messageRepository.findByRequestId(dlr.getMessageId().replaceAll("^00+", ""));
+                Message msg = messageRepository.findByRequestId(dlr.getMessageId().replaceAll("^0+", ""));
                 LocalDateTime deliveryDate = dlr.getDoneDate().toLocalDateTime();
                 Instant instant = deliveryDate.atZone(ZoneId.systemDefault()).toInstant();
                 Date donedate = Date.from(instant);

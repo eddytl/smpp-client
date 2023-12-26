@@ -153,7 +153,7 @@ public class SmppSMSService {
 
     private SmppSessionConfiguration sessionConfiguration(Service service) {
         SmppSessionConfiguration sessionConfig = new SmppSessionConfiguration();
-        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
+        Setting setting = settingRepository.findAll().get(0);
         sessionConfig.setName(service.getName());
         sessionConfig.setInterfaceVersion(SmppConstants.VERSION_3_4);
         sessionConfig.setType(SmppBindType.TRANSCEIVER);

@@ -38,7 +38,7 @@ public class Application {
 
     @Bean(name = "service")
     public Service services(SettingRepository settingRepository) {
-        Setting setting = settingRepository.findById(Constant.SETTING_ID).get();
+        Setting setting = settingRepository.findAll().get(0);
         service = new Service();
         service.setName(setting.getServiceName());
         service.setHost(setting.getHost());

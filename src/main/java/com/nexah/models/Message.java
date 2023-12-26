@@ -10,6 +10,7 @@ public class Message {
     @Id
     private String id;
     private String requestId;
+    private String campaignId;
     private String msisdn;
     private String sender;
     private String message;
@@ -133,6 +134,14 @@ public class Message {
 
     public int getRetry() {
         return retry;
+    }
+
+    public String getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(String campaignId) {
+        this.campaignId = campaignId;
     }
 
     public void setRetry(int retry) {

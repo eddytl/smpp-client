@@ -15,14 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
+import javax.servlet.MultipartConfigElement;
 @EnableScheduling
 @SpringBootApplication
 @EntityScan
+@EnableAsync
 public class Application {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
     @Autowired
@@ -57,7 +60,12 @@ public class Application {
         return session;
     }
 
-
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("50MB");
+        return factory.createMultipartConfig();
+    }
     @Scheduled(initialDelayString = "${sms.async.initial-delay}", fixedDelayString = "${sms.async.initial-delay}")
     void enquireLinkJob() {
         try {

@@ -24,6 +24,8 @@ server:
     min-spare-threads: 1000
   servlet:
     contextPath: /api
+    request-timeout: 60000
+
   #ssl:
   #  enabled: false
 

@@ -23,7 +23,7 @@ public class PostSMS {
     public static SMSResponse sendsms(SmppSMSService smppSMSService, SmppSession session, Message message, Setting setting) {
         try {
 
-            byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_ISO_8859_1);
+            byte[] textBytes = CharsetUtil.encode(message.getMessage(), CharsetUtil.CHARSET_UCS_2);
             SmsStatus smsStatus = smppSMSService.sendTextMessage(session, textBytes, message, setting);
             if (smsStatus.isSent()) {
                 return new SMSResponse(Constant.SMS_SENT, Constant.SMS_MSG_SENT, smsStatus.getMessageId());

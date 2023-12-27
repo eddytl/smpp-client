@@ -10,10 +10,7 @@ import com.nexah.models.Message;
 import com.nexah.models.Setting;
 import com.nexah.repositories.MessageRepository;
 import com.nexah.repositories.SettingRepository;
-import com.nexah.smpp.Async;
-import com.nexah.smpp.ClientSmppSessionHandler;
-import com.nexah.smpp.Service;
-import com.nexah.smpp.SmsStatus;
+import com.nexah.smpp.*;
 import com.nexah.utils.Constant;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
@@ -46,9 +43,9 @@ public class SmppSMSService {
             try {
 
                 SubmitSm submit = new SubmitSm();
-                submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
+//                submit.setDataCoding(SmppConstants.DATA_CODING_LATIN1);  //Encoded text in Latin 1 alphabet - Prend en compte les accents et les caractères spéciaux
 //                submit.setDataCoding(SmppConstants.DATA_CODING_DEFAULT);  //Encoded text in GSM 7-bit - Accents et caractères spéciaux non pris en charge;
-//                submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet
+                submit.setDataCoding(SmppConstants.DATA_CODING_UCS2);   //Encoded text in UCS2 alphabet
 
                 submit.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
 

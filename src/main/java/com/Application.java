@@ -11,6 +11,7 @@ import com.nexah.smpp.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -35,16 +36,20 @@ public class Application {
     @Autowired
     private ArrayList<Service> services = new ArrayList<>();
 
+    @Value("${smpp_account.host}")
+    private String host;
+    @Value("${smpp_account.port}")
+    private int port;
+    @Value("${smpp_account.transactional.username}")
+    private String tusername;
+    @Value("${smpp_account.commercial.username}")
+    private String cusername;
+    @Value("${smpp_account.password}")
+    private String password;
     static public void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-//        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
-//        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
-        /*String text = "Test #8: ISO/IEC-10646, e.mail@address 24579 % £ $ ¥ € ? ! λ ت ї Ӝ ױ";
-        byte[] textBytes = text.getBytes(StandardCharsets.UTF_16BE);
-        byte[] textInHex = HexUtil.toHexString(textBytes).getBytes();
-//[70, 69, 70, 70, 48, 48, 53, 52, 48, 48, 54, 53, 48, 48, 55, 51, 48, 48, 55, 52, 48, 48, 50, 48, 48, 48, 50, 51, 48, 48, 51, 56, 48, 48, 51, 65, 48, 48, 50, 48, 48, 48, 52, 57, 48, 48, 53, 51, 48, 48, 52, 70, 48, 48, 50, 70, 48, 48, 52, 57, 48, 48, 52, 53, 48, 48, 52, 51, 48, 48, 50, 68, 48, 48, 51, 49, 48, 48, 51, 48, 48, 48, 51, 54, 48, 48, 51, 52, 48, 48, 51, 54, 48, 48, 50, 67, 48, 48, 50, 48, 48, 48, 54, 53, 48, 48, 50, 69, 48, 48, 54, 68, 48, 48, 54, 49, 48, 48, 54, 57, 48, 48, 54, 67, 48, 48, 52, 48, 48, 48, 54, 49, 48, 48, 54, 52, 48, 48, 54, 52, 48, 48, 55, 50, 48, 48, 54, 53, 48, 48, 55, 51, 48, 48, 55, 51, 48, 48, 50, 48, 48, 48, 51, 50, 48, 48, 51, 52, 48, 48, 51, 53, 48, 48, 51, 55, 48, 48, 51, 57, 48, 48, 50, 48, 48, 48, 50, 53, 48, 48, 50, 48, 48, 48, 65, 51, 48, 48, 50, 48, 48, 48, 50, 52, 48, 48, 50, 48, 48, 48, 65, 53, 48, 48, 50, 48, 50, 48, 65, 67, 48, 48, 50, 48, 48, 48, 51, 70, 48, 48, 50, 48, 48, 48, 50, 49, 48, 48, 50, 48, 48, 51, 66, 66, 48, 48, 50, 48, 48, 54, 50, 65, 48, 48, 50, 48, 48, 52, 53, 55, 48, 48, 50, 48, 48, 52, 68, 67, 48, 48, 50, 48, 48, 53, 70, 49]
-        System.out.println(HexUtil.toHexString(textBytes));
-        System.out.println(Arrays.toString(textBytes));*/
+        ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
+        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
+        List<Service> services = (ArrayList<Service>) ctx.getBean("services");
     }
 
     @Bean(name = "services")
@@ -52,19 +57,19 @@ public class Application {
 
         Service service01 = new Service();
         service01.setName("Transactional");
-        service01.setHost("80.12.36.131");
-        service01.setPort(2775);
-        service01.setUsername("A2Pnexah1");
-        service01.setPassword("A2P75int");
+        service01.setHost(host);
+        service01.setPort(port);
+        service01.setUsername(tusername);
+        service01.setPassword(password);
         service01.setBound(false);
         services.add(service01);
 
         Service service02 = new Service();
         service02.setName("Commercial");
-        service02.setHost("80.12.36.131");
-        service02.setPort(2775);
-        service02.setUsername("A2Pnexah2");
-        service02.setPassword("A2P75int");
+        service02.setHost(host);
+        service02.setPort(port);
+        service02.setUsername(cusername);
+        service02.setPassword(password);
         service02.setBound(false);
         services.add(service02);
 

@@ -32,6 +32,7 @@ public class PostSMS {
             }
 
         } catch (Exception e) {
+            log.error(e.getLocalizedMessage());
             return new SMSResponse(Constant.SMS_ERROR, e.toString(), message.getId());
         }
     }

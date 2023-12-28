@@ -11,6 +11,7 @@ import com.nexah.http.responses.DLRresp;
 import com.nexah.http.rest.PostSMS;
 import com.nexah.models.Message;
 import com.nexah.repositories.MessageRepository;
+import com.nexah.utils.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,11 +56,10 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
         PduResponse response = null;
         try {
             if (request instanceof DeliverSm) {
-                //String msisdn = ((DeliverSm) request).getSourceAddress().getAddress();
                 String message = CharsetUtil.decode(((DeliverSm) request).getShortMessage(),
                         mapDataCodingToCharset(((DeliverSm) request).getDataCoding()));
                 DeliveryReceipt dlr = DeliveryReceipt.parseShortMessage(message, ZoneOffset.UTC);
-                Message msg = messageRepository.findByRequestId(dlr.getMessageId().replaceAll("^0+", ""));
+                Message msg = messageRepository.findByRequestIdAndStatus(dlr.getMessageId().replaceAll("^0+", ""), Constant.SMS_SENT);
                 LocalDateTime deliveryDate = dlr.getDoneDate().toLocalDateTime();
                 Instant instant = deliveryDate.atZone(ZoneId.systemDefault()).toInstant();
                 Date donedate = Date.from(instant);

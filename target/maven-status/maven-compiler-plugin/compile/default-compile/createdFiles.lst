@@ -6,7 +6,6 @@ com/nexah/smpp/Service.class
 com/nexah/smpp/GsmConstants.class
 com/nexah/models/Setting.class
 com/nexah/smpp/DeliveryReceipt.class
-com/nexah/services/SMSService.class
 com/nexah/http/responses/SMSResponse.class
 com/nexah/http/responses/BulkSMSResponse.class
 com/nexah/smpp/Async.class

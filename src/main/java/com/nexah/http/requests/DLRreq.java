@@ -18,6 +18,15 @@ public class DLRreq {
     public DLRreq() {
     }
 
+    public DLRreq(String requestId, String deliveryStatus, String mobileno, String provider, String submitDate, String deliverytime, Integer isSmpp) {
+        this.requestId = requestId;
+        this.deliveryStatus = deliveryStatus;
+        this.mobileno = mobileno;
+        this.provider = provider;
+        this.submitDate = submitDate;
+        this.deliverytime = deliverytime;
+        this.isSmpp = isSmpp;
+    }
 
     public String getRequestId() {
         return requestId;

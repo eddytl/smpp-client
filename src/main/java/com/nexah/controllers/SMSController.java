@@ -1,6 +1,5 @@
 package com.nexah.controllers;
 
-import com.Application;
 import com.cloudhopper.smpp.SmppSession;
 import com.nexah.http.requests.BulkSMSRequest;
 import com.nexah.http.requests.DLRreq;
@@ -14,25 +13,18 @@ import com.nexah.models.Message;
 import com.nexah.models.Setting;
 import com.nexah.repositories.MessageRepository;
 import com.nexah.repositories.SettingRepository;
-import com.nexah.services.SMSService;
 import com.nexah.services.SmppSMSService;
 import com.nexah.utils.Constant;
 import com.nexah.utils.DateUtils;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -49,11 +41,6 @@ public class SMSController {
     MessageRepository messageRepository;
     @Autowired
     SettingRepository settingRepository;
-    @Autowired
-    SMSService smsService;
-    public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    private static final Logger log = LoggerFactory.getLogger(SMSController.class);
-
 
     @GetMapping(value = "/sendsms")
     public @ResponseBody
@@ -211,77 +198,9 @@ public class SMSController {
 
     }
 
-    @GetMapping(value = "/sendsmsfile")
-    public @ResponseBody
-    SMSResponse sendsmsfile(@RequestParam("file") MultipartFile file, @RequestParam(name = "apiKey") String apiKey, @RequestParam(name = "campaignId") String campaignId,
-                            @RequestParam(name = "sender") String sender, @RequestParam(name = "traffic") String traffic,
-                            @RequestParam(name = "message") String message, @RequestParam(name = "dlrUrl") String dlrUrl) throws IOException {
-
-        if (apiKey.equals(localApiKey)) {
-            if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
-                if (TYPE.equals(file.getContentType())) {
-                    Setting setting = settingRepository.findAll().get(0);
-//                    smsService.sendsms(file, sender, message, traffic, campaignId, dlrUrl, setting);
-                    Workbook workbook = new XSSFWorkbook(file.getInputStream());
-                    Sheet sheet = workbook.getSheetAt(0);
-                    Iterator<Row> rowIterator = sheet.rowIterator();
-                    while (rowIterator.hasNext()) {
-                        Row row = rowIterator.next();
-                        // Now let's iterate over the columns of the current row
-                        int cellIdx = 0;
-                        Iterator<Cell> cellIterator = row.cellIterator();
-                        while (cellIterator.hasNext()) {
-                            Cell cell = cellIterator.next();
-                            String msisdn = null;
-                            if (cell.getCellType().equals(CellType.STRING)) {
-                                msisdn = cell.getStringCellValue();
-                            } else if (cell.getCellType().equals(CellType.NUMERIC)) {
-                                String mobileno = Double.toString(cell.getNumericCellValue());
-                                BigDecimal bigDecimalValue = new BigDecimal(mobileno);
-                                msisdn = bigDecimalValue.toPlainString();
-                            }
-                            if (cellIdx == 0) {
-                                if (msisdn.length() == Constant.MSISDN_LENGTH) {
-                                    Message msg = new Message();
-                                    msg.setMsisdn(msisdn);
-                                    msg.setSender(sender);
-                                    msg.setCampaignId(campaignId);
-                                    msg.setMessage(message);
-                                    msg.setTraffic(traffic);
-                                    msg.setStatus(Constant.SMS_CREATED);
-                                    msg.setRetry(0);
-                                    msg.setDlrUrl(dlrUrl);
-                                    msg.setDlrIsSent(false);
-                                    msg.setCreatedAt(new Date());
-                                    msg.setUpdatedAt(new Date());
-                                    messageRepository.save(msg);
-
-                                    if (session.isBound()) {
-                                        if (session.getConfiguration().getName().equals(traffic)) {
-                                            PostSMS.sendsms(smppSMSService, session, msg, setting);
-                                        }
-                                    }
-                                }
-                            }
-                            cellIdx++;
-                        }
-                    }
-                    workbook.close();
-                }
-            } else {
-                return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_CREDENTIALS, null);
-            }
-
-        } else {
-            return new SMSResponse(Constant.SMS_ERROR, Constant.INVALID_KEY, null);
-        }
-
-        return new SMSResponse(Constant.SMS_SENT, "Request accepted", null);
-    }
 
     @PostMapping(value = "/dlr")
-    public @ResponseBody
-    DLRresp dlr(@RequestBody DLRreq dlr) throws ParseException {
+    public @ResponseBody DLRresp dlr(@RequestBody DLRreq dlr) throws ParseException {
         Message msg = messageRepository.findByRequestId(dlr.getRequestId().replaceAll("^0+", ""));
         if (msg != null) {
             msg.setStatus(dlr.getDeliveryStatus());

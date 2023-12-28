@@ -2,6 +2,8 @@ package com.nexah.services;
 
 import com.cloudhopper.smpp.*;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
+import com.cloudhopper.smpp.pdu.QuerySm;
+import com.cloudhopper.smpp.pdu.QuerySmResp;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
 import com.cloudhopper.smpp.tlv.Tlv;
@@ -27,9 +29,9 @@ import java.util.concurrent.TimeUnit;
 public class SmppSMSService {
 
     @Autowired
-    MessageRepository messageRepository;
-    @Autowired
     SettingRepository settingRepository;
+    @Autowired
+    MessageRepository messageRepository;
 
     private static final Logger log = LoggerFactory.getLogger(SmppSMSService.class);
 
@@ -69,30 +71,44 @@ public class SmppSMSService {
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, setting.getSubmitSmTimeOut());
 
-                if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
-                    message.setRequestId(submitResponse.getMessageId());
-                    message.setStatus(Constant.SMS_SENT);
-                    message.setRetry(retry);
-                    message.setSubmitedAt(new Date());
-                    messageRepository.save(message);
+//                if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
+                if (!submitResponse.getMessageId().isEmpty()) {
+                    try {
+                        message.setRequestId(submitResponse.getMessageId());
+                        message.setStatus(Constant.SMS_SENT);
+                        message.setRetry(retry);
+                        message.setSubmitedAt(new Date());
+                        messageRepository.save(message);
+                    } catch (Exception e) {
+                        error = e.getLocalizedMessage();
+                        message.setRequestId(submitResponse.getMessageId());
+                        message.setStatus(Constant.SMS_SENT);
+                        message.setRetry(retry);
+                        message.setSubmitedAt(new Date());
+                        message.setErrorMsg(error);
+                        messageRepository.save(message);
+                    }
                     return new SmsStatus(true, message.getId());
                 } else {
+                    error = submitResponse.getResultMessage();
+                    log.error("smpp error cmd : " + submitResponse.getCommandStatus() + " message : " + error);
+                    String msg = error == null ? "NULL" : error;
                     message.setStatus(Constant.SMS_FAILED);
-                    message.setErrorMsg(submitResponse.getResultMessage());
+                    message.setErrorMsg(msg);
                     message.setRetry(retry);
                     message.setSubmitedAt(new Date());
                     messageRepository.save(message);
-                    error = submitResponse.getResultMessage();
                 }
             } catch (RecoverablePduException | UnrecoverablePduException | SmppTimeoutException |
                      SmppChannelException
                      | InterruptedException e) {
+                error = e.getLocalizedMessage();
+                log.error("exception send sms error " + error);
                 message.setStatus(Constant.SMS_FAILED);
-                message.setErrorMsg(e.getLocalizedMessage());
+                message.setErrorMsg(error);
                 message.setSubmitedAt(new Date());
                 message.setRetry(retry);
                 messageRepository.save(message);
-                error = e.getLocalizedMessage();
             }
             // Increment the retry counter
             retry++;

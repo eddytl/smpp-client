@@ -16,4 +16,5 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     List<Message> findAll();
     Page<Message> findAll(Pageable pageable);
     Message findByRequestId(String requestId);
+    Message findByRequestIdAndStatus(String requestId, String status);
 }

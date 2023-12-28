@@ -27,4 +27,12 @@ public class SmsStatus {
     public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
+
+    @Override
+    public String toString() {
+        return "SmsStatus{" +
+                "isSent=" + isSent +
+                ", messageId='" + messageId + '\'' +
+                '}';
+    }
 }

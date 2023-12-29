@@ -2,8 +2,6 @@ package com.nexah.services;
 
 import com.cloudhopper.smpp.*;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
-import com.cloudhopper.smpp.pdu.QuerySm;
-import com.cloudhopper.smpp.pdu.QuerySmResp;
 import com.cloudhopper.smpp.pdu.SubmitSm;
 import com.cloudhopper.smpp.pdu.SubmitSmResp;
 import com.cloudhopper.smpp.tlv.Tlv;
@@ -12,7 +10,10 @@ import com.nexah.models.Message;
 import com.nexah.models.Setting;
 import com.nexah.repositories.MessageRepository;
 import com.nexah.repositories.SettingRepository;
-import com.nexah.smpp.*;
+import com.nexah.smpp.Async;
+import com.nexah.smpp.ClientSmppSessionHandler;
+import com.nexah.smpp.Service;
+import com.nexah.smpp.SmsStatus;
 import com.nexah.utils.Constant;
 import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ public class SmppSMSService {
     SettingRepository settingRepository;
     @Autowired
     MessageRepository messageRepository;
+    @Autowired
+    private Service service;
 
     private static final Logger log = LoggerFactory.getLogger(SmppSMSService.class);
 
@@ -81,7 +84,7 @@ public class SmppSMSService {
                         messageRepository.save(message);
                     } catch (Exception e) {
                         error = e.getLocalizedMessage();
-                        message.setRequestId(submitResponse.getMessageId());
+                        message.setRequestId(submitResponse.getMessageId() + "_");
                         message.setStatus(Constant.SMS_SENT);
                         message.setRetry(retry);
                         message.setSubmitedAt(new Date());
@@ -109,6 +112,8 @@ public class SmppSMSService {
                 message.setSubmitedAt(new Date());
                 message.setRetry(retry);
                 messageRepository.save(message);
+                service.setBound(false);
+                session = bindSession(session, service);
             }
             // Increment the retry counter
             retry++;
@@ -133,6 +138,7 @@ public class SmppSMSService {
         try {
             SmppSessionConfiguration config = sessionConfiguration(service);
             session = clientBootstrap().bind(config, new ClientSmppSessionHandler(session, messageRepository));
+            service.setBound(true);
             return session;
         } catch (Exception e) {
             log.error(e.getMessage());

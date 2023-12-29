@@ -20,5 +20,6 @@ com/nexah/services/SmppSMSService.class
 com/nexah/controllers/SMSController.class
 com/nexah/http/rest/PostSMS.class
 com/nexah/utils/DateUtils.class
+com/nexah/http/requests/DLRequest.class
 com/nexah/smpp/GsmUtil.class
 com/nexah/http/requests/SMSRequest.class

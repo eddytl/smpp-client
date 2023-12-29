@@ -1,10 +1,7 @@
 package com.nexah.controllers;
 
 import com.cloudhopper.smpp.SmppSession;
-import com.nexah.http.requests.BulkSMSRequest;
-import com.nexah.http.requests.DLRreq;
-import com.nexah.http.requests.SMS;
-import com.nexah.http.requests.SMSRequest;
+import com.nexah.http.requests.*;
 import com.nexah.http.responses.BulkSMSResponse;
 import com.nexah.http.responses.DLRresp;
 import com.nexah.http.responses.SMSResponse;
@@ -200,8 +197,8 @@ public class SMSController {
 
 
     @PostMapping(value = "/dlr")
-    public @ResponseBody DLRresp dlr(@RequestBody DLRreq dlr) throws ParseException {
-        Message msg = messageRepository.findByRequestId(dlr.getRequestId().replaceAll("^0+", ""));
+    public @ResponseBody DLRresp dlr(@RequestBody DLRequest dlr) throws ParseException {
+        Message msg = messageRepository.findByRequestIdAndStatus(dlr.getRequestId().replaceAll("^0+", ""), Constant.SMS_SENT);
         if (msg != null) {
             msg.setStatus(dlr.getDeliveryStatus());
             msg.setDeliveredAt(DateUtils.stringToDate(dlr.getDeliverytime()));

@@ -72,13 +72,6 @@ public class DLRreq {
         this.deliverytime = DateUtils.dateToString(deliveryDate);
     }
 
-    public String getSubmitDate() {
-        return submitDate;
-    }
-
-    public void setSubmitDate(ZonedDateTime submitDate) {
-        this.submitDate = DateUtils.dateToString(Date.from(submitDate.toInstant()));
-    }
 
     public Integer getIsSmpp() {
         return isSmpp;

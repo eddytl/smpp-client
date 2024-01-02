@@ -75,7 +75,7 @@ public class SmppSMSService {
                 SubmitSmResp submitResponse = session.submit(submit, setting.getSubmitSmTimeOut());
 
 //                if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
-                if (!submitResponse.getMessageId().isEmpty()) {
+                if (submitResponse != null && submitResponse.getMessageId() != null && !submitResponse.getMessageId().isEmpty()) {
                     try {
                         message.setRequestId(submitResponse.getMessageId());
                         message.setStatus(Constant.SMS_SENT);
@@ -94,7 +94,7 @@ public class SmppSMSService {
                     return new SmsStatus(true, message.getId());
                 } else {
                     error = submitResponse.getResultMessage();
-                    log.error("smpp error cmd : " + submitResponse.getCommandStatus() + " message : " + error);
+                    //log.error("smpp error cmd : " + submitResponse.getCommandStatus() + " message : " + error);
                     String msg = error == null ? "NULL" : error;
                     message.setStatus(Constant.SMS_FAILED);
                     message.setErrorMsg(msg);
@@ -106,7 +106,7 @@ public class SmppSMSService {
                      SmppChannelException
                      | InterruptedException e) {
                 error = e.getLocalizedMessage();
-                log.error("exception send sms error " + error);
+                //log.error("exception send sms error " + error);
                 message.setStatus(Constant.SMS_FAILED);
                 message.setErrorMsg(error);
                 message.setSubmitedAt(new Date());

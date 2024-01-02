@@ -32,7 +32,7 @@ public class PostSMS {
             }
 
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage());
+            //log.error(e.getStackTrace().toString());
             return new SMSResponse(Constant.SMS_ERROR, e.toString(), message.getId());
         }
     }
@@ -49,7 +49,7 @@ public class PostSMS {
             dlRreq.setDeliverytime(message.getDeliveredAt());
             return restTemplate.postForObject(message.getDlrUrl(), dlRreq, DLRresp.class);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            //log.error(e.getMessage());
             return null;
         }
     }

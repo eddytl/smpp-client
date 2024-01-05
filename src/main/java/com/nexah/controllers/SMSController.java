@@ -68,11 +68,13 @@ public class SMSController {
                         return PostSMS.sendsms(smppSMSService, session, msg, setting);
                     } else {
                         msg.setStatus(Constant.SMS_FAILED);
+                        msg.setErrorMsg(Constant.TRAFFIC_NOT_FOUND);
                         messageRepository.save(msg);
                         return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, msg.getId());
                     }
                 } else {
                     msg.setStatus(Constant.SMS_FAILED);
+                    msg.setErrorMsg(Constant.SERVER_NOT_BOUND);
                     messageRepository.save(msg);
                     return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, msg.getId());
                 }
@@ -120,11 +122,13 @@ public class SMSController {
                         return PostSMS.sendsms(smppSMSService, session, msg, setting);
                     } else {
                         msg.setStatus(Constant.SMS_FAILED);
+                        msg.setErrorMsg(Constant.TRAFFIC_NOT_FOUND);
                         messageRepository.save(msg);
                         return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, msg.getId());
                     }
                 } else {
                     msg.setStatus(Constant.SMS_FAILED);
+                    msg.setErrorMsg(Constant.SERVER_NOT_BOUND);
                     messageRepository.save(msg);
                     return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, msg.getId());
                 }

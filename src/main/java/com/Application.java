@@ -92,7 +92,7 @@ public class Application {
                 smppSMSService.rebindSession(session, service);
                 log.error("session rebind success !");
             }else{
-                log.error("session is already in bound state !");
+//                log.error("session is already in bound state !");
             }
         } catch (Exception e) {
             log.error(e.getMessage());

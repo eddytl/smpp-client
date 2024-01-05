@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+
 @EnableScheduling
 @SpringBootApplication
 @EntityScan
@@ -34,6 +35,8 @@ public class Application {
 
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
+        Service service = (Service) ctx.getBean("service");
+        SmppSession session = (SmppSession) ctx.getBean("session");
     }
 
     @Bean(name = "service")
@@ -87,6 +90,9 @@ public class Application {
         try {
             if (!smppSMSService.isBound(session, service)) {
                 smppSMSService.rebindSession(session, service);
+                log.error("session rebind success !");
+            }else{
+                log.error("session is already in bound state !");
             }
         } catch (Exception e) {
             log.error(e.getMessage());

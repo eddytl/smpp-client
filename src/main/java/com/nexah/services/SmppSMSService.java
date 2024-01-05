@@ -156,9 +156,9 @@ public class SmppSMSService {
     public void rebindSession(SmppSession session, Service service) {
         try {
             session = bindSession(session, service);
-            if (session != null) {
+            if (session != null && session.isBound()) {
                 service.setBound(true);
-                log.info("session bound");
+                log.info("session bound!");
             }
         } catch (Exception e) {
             log.error(e.getMessage());

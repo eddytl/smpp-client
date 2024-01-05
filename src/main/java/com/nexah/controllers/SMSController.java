@@ -67,9 +67,13 @@ public class SMSController {
                     if (session.getConfiguration().getName().equals(traffic)) {
                         return PostSMS.sendsms(smppSMSService, session, msg, setting);
                     } else {
+                        msg.setStatus(Constant.SMS_FAILED);
+                        messageRepository.save(msg);
                         return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, msg.getId());
                     }
                 } else {
+                    msg.setStatus(Constant.SMS_FAILED);
+                    messageRepository.save(msg);
                     return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, msg.getId());
                 }
             } else {
@@ -115,9 +119,13 @@ public class SMSController {
                     if (session.getConfiguration().getName().equals(traffic)) {
                         return PostSMS.sendsms(smppSMSService, session, msg, setting);
                     } else {
+                        msg.setStatus(Constant.SMS_FAILED);
+                        messageRepository.save(msg);
                         return new SMSResponse(Constant.SMS_ERROR, Constant.TRAFFIC_NOT_FOUND, msg.getId());
                     }
                 } else {
+                    msg.setStatus(Constant.SMS_FAILED);
+                    messageRepository.save(msg);
                     return new SMSResponse(Constant.SMS_ERROR, Constant.SERVER_NOT_BOUND, msg.getId());
                 }
             } else {

@@ -11,6 +11,7 @@ import com.nexah.http.responses.DLRresp;
 import com.nexah.http.rest.PostSMS;
 import com.nexah.models.Message;
 import com.nexah.repositories.MessageRepository;
+import com.nexah.services.SmppSMSService;
 import com.nexah.utils.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +20,25 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     private static final Logger log = LoggerFactory.getLogger(ClientSmppSessionHandler.class);
-    private SmppSession session;
+//    private SmppSession session;
+    private ArrayList<SmppSession> sessions;
+    private SmppSMSService smppSMSService;
+
     private MessageRepository messageRepository;
 
 
-    public ClientSmppSessionHandler(SmppSession session, MessageRepository messageRepository) {
-        this.session = session;
+//    public ClientSmppSessionHandler(SmppSession session, MessageRepository messageRepository) {
+//        this.session = session;
+//        this.messageRepository = messageRepository;
+//    }
+    public ClientSmppSessionHandler(SmppSMSService smppSMSService, ArrayList<SmppSession> sessions, MessageRepository messageRepository) {
+        this.sessions = sessions;
+        this.smppSMSService = smppSMSService;
         this.messageRepository = messageRepository;
     }
 
@@ -47,7 +57,9 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     @Override
     public void fireChannelUnexpectedlyClosed() {
         super.fireChannelUnexpectedlyClosed();
-        session.close();
+//        session.close();
+        smppSMSService.unbindService(sessions);
+
     }
 
     @Override
@@ -67,10 +79,12 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
                     msg.setStatus(dlr.toStateText(dlr.getState()));
                     msg.setDeliveredAt(donedate);
                     messageRepository.save(msg);
-                    DLRresp resp = PostSMS.sendDLR(msg);
-                    if (resp.getStatus() == 1){
-                        msg.setDlrIsSent(true);
-                        messageRepository.save(msg);
+                    if (msg.getDlrUrl() != null && !msg.getDlrUrl().isEmpty()){
+                        DLRresp resp = PostSMS.sendDLR(msg);
+                        if (resp != null && resp.getStatus() == 1){
+                            msg.setDlrIsSent(true);
+                            messageRepository.save(msg);
+                        }
                     }
                 }else{
                     log.error("Message not found for DLR " + dlr.toString());

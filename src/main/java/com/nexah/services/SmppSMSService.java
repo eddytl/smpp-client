@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -113,7 +114,6 @@ public class SmppSMSService {
                 message.setRetry(retry);
                 messageRepository.save(message);
                 service.setBound(false);
-                session = bindSession(session, service);
             }
             // Increment the retry counter
             retry++;
@@ -134,11 +134,23 @@ public class SmppSMSService {
         }
     }
 
-    public SmppSession bindSession(SmppSession session, Service service) {
+//    public SmppSession bindSession(SmppSession session, Service service) {
+//        try {
+//            SmppSessionConfiguration config = sessionConfiguration(service);
+//            session = clientBootstrap().bind(config, new ClientSmppSessionHandler(session, messageRepository));
+//            service.setBound(true);
+//            return session;
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            return null;
+//        }
+//    }
+
+    public SmppSession bindSession(ArrayList<SmppSession> sessions, Service service) {
         try {
             SmppSessionConfiguration config = sessionConfiguration(service);
-            session = clientBootstrap().bind(config, new ClientSmppSessionHandler(session, messageRepository));
-            service.setBound(true);
+            SmppSession session = clientBootstrap().bind(config, new ClientSmppSessionHandler(this, sessions, messageRepository));
+            sessions.add(session);
             return session;
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -146,20 +158,60 @@ public class SmppSMSService {
         }
     }
 
-    public boolean isBound(SmppSession session, Service service) {
-        if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
-            return true;
+    public void unbindService(ArrayList<SmppSession> sessions) {
+        try {
+            sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
+            log.info(service.getName() + " Provider unbind ready for reconnecting");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+//    public boolean isBound(SmppSession session, Service service) {
+//        if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
+//            return true;
+//        }
+//        return false;
+//    }
+
+    public boolean isBound(ArrayList<SmppSession> sessions) {
+        for (SmppSession session : sessions) {
+            if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
+                return true;
+            }
         }
         return false;
     }
 
-    public void rebindSession(SmppSession session, Service service) {
+//    public void rebindSession(SmppSession session, Service service) {
+//        try {
+//            session = bindSession(session, service);
+//            if (session != null && session.isBound()) {
+//                service.setBound(true);
+//                log.info("session bound!");
+//            }
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//        }
+//    }
+
+    public void rebindSession(ArrayList<SmppSession> sessions) {
         try {
-            session = bindSession(session, service);
-            if (session != null && session.isBound()) {
+            sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
+            SmppSession session = bindSession(sessions, service);
+            if (session != null) {
                 service.setBound(true);
-                log.info("session bound!");
             }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public void unbindService(ArrayList<SmppSession> sessions, SmppSession session) {
+        try {
+            service.setBound(false);
+            sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
+            log.info(service.getName() + " Service unbind  ready for reconnecting");
         } catch (Exception e) {
             log.error(e.getMessage());
         }

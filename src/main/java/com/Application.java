@@ -20,14 +20,19 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @EnableScheduling
 @SpringBootApplication
 @EntityScan
 @EnableAsync
 public class Application {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
+    //    @Autowired
+//    private SmppSession session;
     @Autowired
-    private SmppSession session;
+    private ArrayList<SmppSession> sessions = new ArrayList<>();
     @Autowired
     private Service service;
     @Autowired
@@ -36,7 +41,8 @@ public class Application {
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
         Service service = (Service) ctx.getBean("service");
-        SmppSession session = (SmppSession) ctx.getBean("session");
+//        SmppSession session = (SmppSession) ctx.getBean("session");
+        ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
     }
 
     @Bean(name = "service")
@@ -52,50 +58,65 @@ public class Application {
         return service;
     }
 
-    @Bean(name = "session")
-    public SmppSession session(Service service, SmppSMSService smppSMSService) {
+//    @Bean(name = "session")
+//    public SmppSession session(Service service, SmppSMSService smppSMSService) {
+//        if (!service.getBound()) {
+//            session = smppSMSService.bindSession(session, service);
+//        }
+//        return session;
+//    }
+
+    @Bean(name = "sessions")
+    public ArrayList<SmppSession> sessions(Service service, SmppSMSService smppSMSService) {
         if (!service.getBound()) {
-            session = smppSMSService.bindSession(session, service);
+            smppSMSService.bindSession(sessions, service);
         }
-        return session;
+        return sessions;
     }
 
     @Scheduled(initialDelayString = "${sms.async.initial-delay}", fixedDelayString = "${sms.async.initial-delay}")
     void enquireLinkJob() {
         try {
-            if (session.isBound()) {
-                try {
-                    session.enquireLink(new EnquireLink(), 20000);
-                } catch (SmppTimeoutException | SmppChannelException e) {
-                    log.info(session.getConfiguration().getName() + " Enquire link failed, executing reconnect; " + e);
-                    session.close();
-                } catch (InterruptedException e) {
-                    log.info(session.getConfiguration().getName() + " Enquire link interrupted, probably killed by reconnecting");
-                    session.close();
-                } catch (Exception e) {
-                    log.error(session.getConfiguration().getName() + " Enquire link failed, executing reconnect", e);
-                    session.close();
+            for (SmppSession session : sessions) {
+                if (session.isBound()) {
+                    try {
+                        session.enquireLink(new EnquireLink(), 60000);
+                    } catch (SmppTimeoutException | SmppChannelException e) {
+                        log.info(session.getConfiguration().getName() + " Enquire link failed, executing reconnect; " + e);
+                        smppSMSService.unbindService(sessions, session);
+                    } catch (InterruptedException e) {
+                        log.info(session.getConfiguration().getName() + " Enquire link interrupted, probably killed by reconnecting");
+                        smppSMSService.unbindService(sessions, session);
+                    } catch (Exception e) {
+                        log.error(session.getConfiguration().getName() + " Enquire link failed, executing reconnect", e);
+                        smppSMSService.unbindService(sessions, session);
+                    }
+                } else {
+                    log.error(session.getConfiguration().getName() + " enquire link running while session is not connected");
                 }
-            } else {
-                log.error(session.getConfiguration().getName() + " enquire link running while session is not connected");
             }
         } catch (Exception $e) {
             log.error($e.getMessage());
         }
-
     }
 
     @Scheduled(initialDelayString = "${sms.async.rebind-delay}", fixedDelayString = "${sms.async.rebind-delay}")
     void rebindFailSmppJob() {
         try {
-            if (!smppSMSService.isBound(session, service)) {
-                smppSMSService.rebindSession(session, service);
-                log.error("session rebind success !");
-            }else{
-//                log.error("session is already in bound state !");
+            if (!smppSMSService.isBound(sessions)) {
+                smppSMSService.rebindSession(sessions);
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
+//        try {
+//            if (!smppSMSService.isBound(session, service)) {
+//                smppSMSService.rebindSession(session, service);
+//                log.error("session rebind success !");
+//            }
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//        }
     }
 }

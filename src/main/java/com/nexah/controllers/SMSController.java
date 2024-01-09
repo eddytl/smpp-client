@@ -1,7 +1,10 @@
 package com.nexah.controllers;
 
 import com.cloudhopper.smpp.SmppSession;
-import com.nexah.http.requests.*;
+import com.nexah.http.requests.BulkSMSRequest;
+import com.nexah.http.requests.DLRequest;
+import com.nexah.http.requests.SMS;
+import com.nexah.http.requests.SMSRequest;
 import com.nexah.http.responses.BulkSMSResponse;
 import com.nexah.http.responses.DLRresp;
 import com.nexah.http.responses.SMSResponse;
@@ -13,8 +16,6 @@ import com.nexah.repositories.SettingRepository;
 import com.nexah.services.SmppSMSService;
 import com.nexah.utils.Constant;
 import com.nexah.utils.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,10 @@ import java.util.List;
 @CrossOrigin
 public class SMSController {
 
+//    @Autowired
+//    SmppSession session;
     @Autowired
-    SmppSession session;
+    ArrayList<SmppSession> sessions;
     @Autowired
     SmppSMSService smppSMSService;
     @Value("${api.key}")
@@ -49,6 +52,7 @@ public class SMSController {
 
             if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
                 Setting setting = settingRepository.findAll().get(0);
+                SmppSession session = sessions.get(0);
 
                 Message msg = new Message();
                 msg.setMsisdn(mobileno);
@@ -103,6 +107,7 @@ public class SMSController {
 
             if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH && mobileno.length() == Constant.MSISDN_LENGTH && !message.isEmpty() && message.length() <= Constant.MAX_MSG_LENGTH) {
                 Setting setting = settingRepository.findAll().get(0);
+                SmppSession session = sessions.get(0);
 
                 Message msg = new Message();
                 msg.setMsisdn(mobileno);
@@ -150,6 +155,7 @@ public class SMSController {
             String sender = bulkSMSRequest.getSender();
 
             if (!sender.isEmpty() && sender.length() <= Constant.MAX_SID_LENGTH) {
+                SmppSession session = sessions.get(0);
                 if (session.isBound()) {
                     if (session.getConfiguration().getName().equals(traffic)) {
 

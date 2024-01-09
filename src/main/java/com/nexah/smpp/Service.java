@@ -1,6 +1,6 @@
 package com.nexah.smpp;
 
-
+@org.springframework.stereotype.Service
 public class Service {
 
     private String name;

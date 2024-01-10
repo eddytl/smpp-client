@@ -29,8 +29,6 @@ import java.util.List;
 @EnableAsync
 public class Application {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
-    //    @Autowired
-//    private SmppSession session;
     @Autowired
     private ArrayList<SmppSession> sessions = new ArrayList<>();
     @Autowired
@@ -41,7 +39,6 @@ public class Application {
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
         Service service = (Service) ctx.getBean("service");
-//        SmppSession session = (SmppSession) ctx.getBean("session");
         ArrayList<SmppSession> sessions = (ArrayList<SmppSession>) ctx.getBean("sessions");
     }
 
@@ -57,14 +54,6 @@ public class Application {
         service.setBound(false);
         return service;
     }
-
-//    @Bean(name = "session")
-//    public SmppSession session(Service service, SmppSMSService smppSMSService) {
-//        if (!service.getBound()) {
-//            session = smppSMSService.bindSession(session, service);
-//        }
-//        return session;
-//    }
 
     @Bean(name = "sessions")
     public ArrayList<SmppSession> sessions(Service service, SmppSMSService smppSMSService) {
@@ -109,14 +98,5 @@ public class Application {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-
-//        try {
-//            if (!smppSMSService.isBound(session, service)) {
-//                smppSMSService.rebindSession(session, service);
-//                log.error("session rebind success !");
-//            }
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//        }
     }
 }

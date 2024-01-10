@@ -75,7 +75,6 @@ public class SmppSMSService {
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, setting.getSubmitSmTimeOut());
 
-//                if (submitResponse.getCommandStatus() == SmppConstants.STATUS_OK) {
                 if (submitResponse != null && submitResponse.getMessageId() != null && !submitResponse.getMessageId().isEmpty()) {
                     try {
                         message.setRequestId(submitResponse.getMessageId());
@@ -134,18 +133,6 @@ public class SmppSMSService {
         }
     }
 
-//    public SmppSession bindSession(SmppSession session, Service service) {
-//        try {
-//            SmppSessionConfiguration config = sessionConfiguration(service);
-//            session = clientBootstrap().bind(config, new ClientSmppSessionHandler(session, messageRepository));
-//            service.setBound(true);
-//            return session;
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            return null;
-//        }
-//    }
-
     public SmppSession bindSession(ArrayList<SmppSession> sessions, Service service) {
         try {
             SmppSessionConfiguration config = sessionConfiguration(service);
@@ -167,13 +154,6 @@ public class SmppSMSService {
         }
     }
 
-//    public boolean isBound(SmppSession session, Service service) {
-//        if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
-//            return true;
-//        }
-//        return false;
-//    }
-
     public boolean isBound(ArrayList<SmppSession> sessions) {
         for (SmppSession session : sessions) {
             if (service.getName().equals(session.getConfiguration().getName()) && session.isBound()) {
@@ -182,18 +162,6 @@ public class SmppSMSService {
         }
         return false;
     }
-
-//    public void rebindSession(SmppSession session, Service service) {
-//        try {
-//            session = bindSession(session, service);
-//            if (session != null && session.isBound()) {
-//                service.setBound(true);
-//                log.info("session bound!");
-//            }
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//        }
-//    }
 
     public void rebindSession(ArrayList<SmppSession> sessions) {
         try {

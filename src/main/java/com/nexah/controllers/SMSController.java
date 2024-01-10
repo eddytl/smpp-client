@@ -29,8 +29,6 @@ import java.util.List;
 @CrossOrigin
 public class SMSController {
 
-//    @Autowired
-//    SmppSession session;
     @Autowired
     ArrayList<SmppSession> sessions;
     @Autowired

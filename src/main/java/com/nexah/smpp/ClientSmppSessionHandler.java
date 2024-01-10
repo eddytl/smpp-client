@@ -25,17 +25,11 @@ import java.util.Date;
 
 public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     private static final Logger log = LoggerFactory.getLogger(ClientSmppSessionHandler.class);
-//    private SmppSession session;
     private ArrayList<SmppSession> sessions;
     private SmppSMSService smppSMSService;
 
     private MessageRepository messageRepository;
 
-
-//    public ClientSmppSessionHandler(SmppSession session, MessageRepository messageRepository) {
-//        this.session = session;
-//        this.messageRepository = messageRepository;
-//    }
     public ClientSmppSessionHandler(SmppSMSService smppSMSService, ArrayList<SmppSession> sessions, MessageRepository messageRepository) {
         this.sessions = sessions;
         this.smppSMSService = smppSMSService;
@@ -57,7 +51,6 @@ public class ClientSmppSessionHandler extends DefaultSmppSessionHandler {
     @Override
     public void fireChannelUnexpectedlyClosed() {
         super.fireChannelUnexpectedlyClosed();
-//        session.close();
         smppSMSService.unbindService(sessions);
 
     }

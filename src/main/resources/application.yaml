@@ -38,8 +38,8 @@ spring:
     mongodb:
       host: 3.128.45.200
       port: 27017
-      database: smpp_ocm_db
-      username: smpp_ocm_user
+      database: smpp_mtn_db
+      username: smpp_mtn_user
       password: smppPwd
   jackson:
     serialization:

@@ -10,10 +10,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.juliuskrah</groupId>
-    <artifactId>smpp-client</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <name>smpp-client</name>
-    <description>SMPP Client project</description>
+    <artifactId>smpp-mtn</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>smpp-mtn</name>
+    <description>SMPP MTN project</description>
 
     <properties>
         <hibernate.version>5.2.1.Final</hibernate.version>

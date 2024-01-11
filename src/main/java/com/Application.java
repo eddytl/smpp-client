@@ -21,7 +21,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @EnableScheduling
 @SpringBootApplication

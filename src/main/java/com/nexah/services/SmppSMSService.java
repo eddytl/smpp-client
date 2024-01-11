@@ -151,6 +151,7 @@ public class SmppSMSService {
             SmppSessionConfiguration config = sessionConfiguration(service);
             SmppSession session = clientBootstrap().bind(config, new ClientSmppSessionHandler(this, sessions, messageRepository));
             sessions.add(session);
+            log.error("session binded successfully !");
             return session;
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -161,7 +162,7 @@ public class SmppSMSService {
     public void unbindService(ArrayList<SmppSession> sessions) {
         try {
             sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
-            log.info(service.getName() + " Provider unbind ready for reconnecting");
+            log.error(service.getName() + " Provider unbind ready for reconnecting");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -201,6 +202,7 @@ public class SmppSMSService {
             SmppSession session = bindSession(sessions, service);
             if (session != null) {
                 service.setBound(true);
+                log.error("session rebinded successfully !");
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -211,7 +213,7 @@ public class SmppSMSService {
         try {
             service.setBound(false);
             sessions.removeIf(smppSession -> smppSession.getConfiguration().getName().equals(service.getName()));
-            log.info(service.getName() + " Service unbind  ready for reconnecting");
+            log.error(service.getName() + " Service unbind  ready for reconnecting");
         } catch (Exception e) {
             log.error(e.getMessage());
         }

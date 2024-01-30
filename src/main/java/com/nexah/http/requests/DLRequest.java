@@ -1,9 +1,5 @@
 package com.nexah.http.requests;
 
-import com.nexah.utils.DateUtils;
-
-import java.util.Date;
-
 public class DLRequest {
 
     private String requestId;
@@ -36,13 +32,12 @@ public class DLRequest {
     }
 
 
-
     public String getDeliverytime() {
         return deliverytime;
     }
 
-    public void setDeliverytime(Date deliveryDate) {
-        this.deliverytime = DateUtils.dateToString(deliveryDate);
+    public void setDeliverytime(String deliverytime) {
+        this.deliverytime = deliverytime;
     }
 
 

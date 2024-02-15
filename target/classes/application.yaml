@@ -4,12 +4,13 @@ api:
 jwt:
   secret: dc7eb75c-9c87-11ed-a8fc-0242ac120002
 
-logging:
-  file: /var/www/html/smpp/storage/logs/smpp.log
-  level:
-    root: ERROR
-    com:
-      nexah: ERROR
+#logging:
+#  file: /var/www/html/smpp/storage/logs/smpp.log
+#  level:
+#    root: ERROR
+#    com:
+#      nexah: ERROR
+
 sms:
   async:
     initial-delay: 30000

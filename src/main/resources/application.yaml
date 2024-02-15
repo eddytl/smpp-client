@@ -10,6 +10,7 @@ jwt:
 #    root: ERROR
 #    com:
 #      nexah: ERROR
+
 sms:
   async:
     initial-delay: 30000

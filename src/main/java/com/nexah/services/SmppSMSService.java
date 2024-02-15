@@ -62,15 +62,15 @@ public class SmppSMSService {
                     submit.setShortMessage(textBytes);
                 }
 
-                if (message.getSender().matches("\\d+")) {
-                    if (message.getSender().length() < 8) {
-                        submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, message.getSender()));  //"Short code" TON=06 NPI=00
-                    } else {
-                        submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, message.getSender())); //source address Numeric TON=01 NPI=01
-                    }
-                } else {
+//                if (message.getSender().matches("\\d+")) {
+//                    if (message.getSender().length() < 8) {
+//                        submit.setSourceAddress(new Address((byte) 0x06, (byte) 0x00, message.getSender()));  //"Short code" TON=06 NPI=00
+//                    } else {
+//                        submit.setSourceAddress(new Address((byte) 0x01, (byte) 0x01, message.getSender())); //source address Numeric TON=01 NPI=01
+//                    }
+//                } else {
                     submit.setSourceAddress(new Address((byte) 0x05, (byte) 0x00, message.getSender()));  //source address "Alphanumeric" TON=05 NPI=00
-                }
+//                }
                 submit.setDestAddress(new Address((byte) 0x01, (byte) 0x01, message.getMsisdn()));
                 DefaultChannelFuture.setUseDeadLockChecker(false);
                 SubmitSmResp submitResponse = session.submit(submit, setting.getSubmitSmTimeOut());

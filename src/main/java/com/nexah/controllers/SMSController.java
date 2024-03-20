@@ -87,6 +87,8 @@ public class SMSController {
                     msg.setStatus(Constant.SMS_FAILED);
                     msg.setErrorMsg("Server Error");
                     messageRepository.save(msg);
+                    setting.setNbError(setting.getNbError() + 1);
+                    settingRepository.save(setting);
                     return new SMSResponse(Constant.SMS_ERROR, "Server Error", msg.getId());
                 }
             } else {
@@ -150,6 +152,8 @@ public class SMSController {
                     msg.setStatus(Constant.SMS_FAILED);
                     msg.setErrorMsg("Server Error");
                     messageRepository.save(msg);
+                    setting.setNbError(setting.getNbError() + 1);
+                    settingRepository.save(setting);
                     return new SMSResponse(Constant.SMS_ERROR, "Server Error", msg.getId());
                 }
             } else {

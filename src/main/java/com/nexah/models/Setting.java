@@ -14,6 +14,8 @@ public class Setting {
     private String serviceName;
     private String host;
     private int port;
+    private int nbError;
+    private int maxError;
     private String username;
     private String password;
     private String smppErrors;
@@ -107,5 +109,22 @@ public class Setting {
 
     public void setSmppErrors(String smppErrors) {
         this.smppErrors = smppErrors;
+    }
+
+
+    public int getNbError() {
+        return nbError;
+    }
+
+    public void setNbError(int nbError) {
+        this.nbError = nbError;
+    }
+
+    public int getMaxError() {
+        return maxError;
+    }
+
+    public void setMaxError(int maxError) {
+        this.maxError = maxError;
     }
 }

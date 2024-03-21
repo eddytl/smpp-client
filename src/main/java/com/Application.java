@@ -37,6 +37,8 @@ public class Application {
     private Service service;
     @Autowired
     private SmppSMSService smppSMSService;
+    @Autowired
+    SettingRepository settingRepository;
 
     static public void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);

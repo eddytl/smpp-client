@@ -202,6 +202,9 @@ public class SmppSMSService {
             SmppSession session = bindSession(sessions, service);
             if (session != null) {
                 service.setBound(true);
+                Setting setting = settingRepository.findAll().get(0);
+                setting.setNbError(0);
+                settingRepository.save(setting);
                 log.error("session rebinded successfully !");
             }
         } catch (Exception e) {
